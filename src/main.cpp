@@ -6,7 +6,6 @@
 #include "battery.h"
 #include "sdcard.h"
 #include "ui.h"
-#include "services/logger.h"
 #include "footer.h" // Include footer.h
 #include "settings.h" // Include settings.h
 #include "screens/wifi_screen.h" // Include Wi-Fi screen header
@@ -33,12 +32,6 @@ void setup() {
         Serial.println("Failed to initialize SD card");
     } else {
         Serial.println("SD card initialized successfully");
-        // Initialize logger after SD card is ready
-        if (!Logger::getInstance().init()) {
-            Serial.println("Failed to initialize logger");
-        } else {
-            Logger::getInstance().logSystemEvent("System started", 100.0);
-        }
     }
 
     // Load settings
@@ -97,7 +90,6 @@ void loop() {
 
                 if (buttonIndex < footer.getButtons().size()) {
                     Serial.println(footer.getButtons()[buttonIndex].label + " button pressed");
-                    Logger::getInstance().logSystemEvent("Footer button pressed: " + footer.getButtons()[buttonIndex].label, 50.0);
                     isRendering = true;
                     footer.invokeButtonAction(buttonIndex);
                     isRendering = false;
@@ -106,14 +98,12 @@ void loop() {
                 // Handle file selection if on FILES_SCREEN
                 if (currentScreen == FILES_SCREEN) {
                     int touchedRow = y / 60;
-                    Logger::getInstance().logSystemEvent("Files screen touch at row: " + String(touchedRow), 25.0);
                     screens::handleTouch(touchedRow, x, y);
                 }
                 // Handle Wi-Fi row touch on MAIN_SCREEN
                 else if (currentScreen == MAIN_SCREEN) {
                     int touchedRow = y / 60;
                     if (touchedRow == 5) { // Wi-Fi row is row 5
-                        Logger::getInstance().logSystemEvent("WiFi row pressed on main screen", 25.0);
                         displayMessage("Wi-Fi pressed");
                         currentScreen = WIFI_SCREEN;
                         renderCurrentScreen();
@@ -126,14 +116,12 @@ void loop() {
                         int keyRow = (y - (EPD_HEIGHT - (4 * 60) - 60)) / 60; // Adjust based on keyboard layout
                         int keyCol = x / (EPD_WIDTH / 10);
                         if (keyRow >= 0 && keyRow < 4 && keyCol >= 0 && keyCol < 10) {
-                            char key = keyboards::ENG_KEYBOARD_LAYOUT[keyRow][keyCol][0];
-                            Logger::getInstance().logSystemEvent("Keyboard key pressed: " + String(key), 15.0);
-                            screens::handleKeyboardInput(key);
+                            String key = keyboards::ENG_KEYBOARD_LAYOUT[keyRow][keyCol]; // Изменен тип и получение значения
+                            screens::handleKeyboardInput(key.c_str()); // Передача C-строки
                         }
                     } else {
                         // Handle Wi-Fi selection
                         int touchedRow = y / 60;
-                        Logger::getInstance().logSystemEvent("WiFi network selection at row: " + String(touchedRow), 25.0);
                         screens::handleWiFiSelection(touchedRow);
                     }
                 }

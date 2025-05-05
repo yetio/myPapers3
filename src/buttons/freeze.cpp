@@ -3,6 +3,7 @@
 #include "../ui.h"
 #include "../screens/txt_viewer_screen.h"
 #include "../screens/img_viewer_screen.h"
+#include <esp_sleep.h>
 
 void freezeAction() {
     displayMessage("Freeze");
@@ -26,4 +27,6 @@ void freezeAction() {
 
     // Shutdown the device to save power
     M5.Power.powerOff();
+    // Фоллбэк глубокий сон, если питание не отключилось при USB
+    esp_deep_sleep_start();
 }

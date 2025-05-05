@@ -9,7 +9,7 @@
 namespace screens {
     void drawWifiScreen();
     void handleWiFiSelection(int row);
-    void handleKeyboardInput(char key);
+    void handleKeyboardInput(String key); // Изменено с char key на String key
     extern bool isPasswordInputActive;
 }
 

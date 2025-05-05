@@ -130,7 +130,7 @@ namespace screens {
                 return;
             } else if (row == 5) { // Handle Enter button click
                 Logger::getInstance().logSystemEvent("WiFi password confirmed", 25.0);
-                handleKeyboardInput('↵');
+                handleKeyboardInput("↵"); // Изменено на строковый литерал
                 return;
             } else if (row == 6) { // Handle Test button click
                 Logger::getInstance().logSystemEvent("WiFi test button pressed", 25.0);
@@ -147,15 +147,15 @@ namespace screens {
         }
     }
 
-    void handleKeyboardInput(char key) {
+    void handleKeyboardInput(String key) { // Изменен тип переменной key на String
         Serial.print("Received key: ");
         Serial.println(key);
 
-        if (key == '<') {
+        if (key == "<") { // Изменено на строковый литерал
             if (passwordInput.length() > 0) {
                 passwordInput.remove(passwordInput.length() - 1);
             }
-        } else if (key == 'C') {
+        } else if (key == "C") { // Изменено на строковый литерал
             // Cancel button - return to WiFi networks list
             Serial.println("Cancel button pressed in handleKeyboardInput");
             displayMessage("Cancel button pressed");
@@ -164,7 +164,7 @@ namespace screens {
             passwordInput = "";
             renderCurrentScreen();
             return;
-        } else if (key == '↵') {
+        } else if (key == "↵") { // Изменено на строковый литерал
             // Enter button - apply password and attempt connection
             if (!selectedSSID.isEmpty() && !passwordInput.isEmpty()) {
                 Settings settings;
