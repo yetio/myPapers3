@@ -1,12 +1,10 @@
 // button.cpp
 #include "button.h"
-#include "services/logger.h"
 
 Button::Button(int x, int y, int width, int height, const String& label, std::function<void()> onPress)
     : _x(x), _y(y), _width(width), _height(height), _label(label), _onPress(onPress) {}
 
 void Button::draw() const {
-    Logger::getInstance().logButtonEvent("Drawing button: " + _label, 50.0);
     uint16_t btnColor = TFT_WHITE;
     uint16_t textColor = TFT_BLACK;
 
@@ -29,16 +27,12 @@ void Button::draw() const {
 bool Button::isPressed(int touchX, int touchY) const {
     bool pressed = (touchX >= _x && touchX <= (_x + _width) &&
             touchY >= _y && touchY <= (_y + _height));
-    if (pressed) {
-        Logger::getInstance().logButtonEvent("Button pressed: " + _label, 25.0);
-    }
     return pressed;
 }
 
 void Button::press() const {
     // Execute assigned action
     if (_onPress) {
-        Logger::getInstance().logButtonEvent("Executing button action: " + _label, 75.0);
         _onPress();
     }
 }

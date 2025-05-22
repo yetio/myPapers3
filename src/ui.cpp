@@ -2,6 +2,9 @@
 #include "ui.h"
 #include <WiFi.h> // Added for using WiFi
 
+// Флаг первого рендера: на нем - полное обновление, далее - быстрый DU4
+static bool firstRenderDone = false;
+
 // Initialize footer
 Footer footer;
 
@@ -140,7 +143,18 @@ void renderCurrentScreen() {
     footer.draw(footer.isVisible());
 
     M5.Display.endWrite();
-    M5.Display.display();
+    if (!firstRenderDone) {
+        // Первое обновление - полное
+        M5.Display.display();
+        firstRenderDone = true;
+    } else {
+        // Частичное обновление региона контента (строки 2..15)
+        RowPosition start = getRowPosition(2);
+        RowPosition footerPos = getRowPosition(15);
+        int regionY = start.y;
+        int regionHeight = footerPos.y - start.y;
+        M5.Display.display(start.x, regionY, start.width, regionHeight);
+    }
 }
 
 // Update UI by clearing old messages

@@ -2,7 +2,6 @@
 #include "../ui.h"
 #include "../settings.h"
 #include "../keyboards/eng_keyboard.h"
-#include "../services/logger.h"
 
 namespace screens {
     static String selectedSSID = "";
@@ -22,13 +21,10 @@ namespace screens {
             WiFi.mode(WIFI_STA);
             WiFi.disconnect(false);  // Disconnect but don't clear saved networks
 
-            Logger::getInstance().logWiFiEvent("Starting WiFi network scan", 200.0);
             int result = WiFi.scanNetworks(true, true);  // Start async scan, show hidden networks
             if (result == WIFI_SCAN_FAILED) {
-                Logger::getInstance().logWiFiEvent("WiFi scan failed, retrying", 50.0);
                 result = WiFi.scanNetworks(true, true);
                 if (result == WIFI_SCAN_FAILED) {
-                    Logger::getInstance().logWiFiEvent("WiFi scan failed after retry", 25.0);
                     return;
                 }
             }
@@ -36,7 +32,6 @@ namespace screens {
             if (result != WIFI_SCAN_FAILED) {
                 isScanning = true;
                 lastScanTime = millis();
-                Logger::getInstance().logWiFiEvent("WiFi scan started successfully", 150.0);
             }
         }
     }
@@ -63,7 +58,6 @@ namespace screens {
 
                 isScanning = false;
                 WiFi.scanDelete(); // Clean up scan results
-                Logger::getInstance().logWiFiEvent("WiFi scan completed. Found " + String(validNetworks) + " networks", 100.0);
             }
         }
     }
@@ -96,7 +90,14 @@ namespace screens {
             bufferRow("Test", 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true); // Clickable test button
             keyboards::drawEngKeyboard();
             drawRowsBuffered();
-            M5.Display.display();
+            {
+                // Частичное обновление региона контента (строки 2..15)
+                RowPosition start = getRowPosition(2);
+                RowPosition footerPos = getRowPosition(15);
+                int regionY = start.y;
+                int regionHeight = footerPos.y - start.y;
+                M5.Display.display(start.x, regionY, start.width, regionHeight);
+            }
             return;
         }
 
@@ -116,24 +117,28 @@ namespace screens {
 
         drawRowsBuffered();
         footer.draw(footer.isVisible());
-        M5.Display.display();
+        {
+            // Частичное обновление региона контента (строки 2..15)
+            RowPosition start = getRowPosition(2);
+            RowPosition footerPos = getRowPosition(15);
+            int regionY = start.y;
+            int regionHeight = footerPos.y - start.y;
+            M5.Display.display(start.x, regionY, start.width, regionHeight);
+        }
     }
 
     void handleWiFiSelection(int row) {
         if (isPasswordInputActive) {
             if (row == 4) { // Handle Cancel button click
-                Logger::getInstance().logSystemEvent("WiFi password input cancelled", 25.0);
                 isPasswordInputActive = false;
                 selectedSSID = "";
                 passwordInput = "";
                 renderCurrentScreen();
                 return;
             } else if (row == 5) { // Handle Enter button click
-                Logger::getInstance().logSystemEvent("WiFi password confirmed", 25.0);
                 handleKeyboardInput("↵"); // Изменено на строковый литерал
                 return;
             } else if (row == 6) { // Handle Test button click
-                Logger::getInstance().logSystemEvent("WiFi test button pressed", 25.0);
                 displayMessage("Test button pressed");
                 return;
             }
@@ -182,16 +187,14 @@ namespace screens {
                         connected = true;
                         break;
                     }
-                    delay(100);
+                    yield(); // неблокирующая пауза вместо delay
                 }
 
                 if (connected) {
-                    Logger::getInstance().logWiFiEvent("Successfully connected to " + selectedSSID, 100.0);
                     displayMessage("Connected to " + selectedSSID);
                     currentScreen = MAIN_SCREEN;
                     screens::drawClearScreen();
                 } else {
-                    Logger::getInstance().logWiFiEvent("Failed to connect to " + selectedSSID, 50.0);
                     displayMessage("Connection failed");
                     WiFi.disconnect();
                 }
@@ -216,7 +219,14 @@ namespace screens {
             M5.Display.setTextSize(FONT_SIZE_ALL);
             M5.Display.print("Password: " + passwordInput);
             M5.Display.endWrite();
-            M5.Display.display();
+            {
+                // Частичное обновление региона контента (строки 2..15)
+                RowPosition start = getRowPosition(2);
+                RowPosition footerPos = getRowPosition(15);
+                int regionY = start.y;
+                int regionHeight = footerPos.y - start.y;
+                M5.Display.display(start.x, regionY, start.width, regionHeight);
+            }
         }
     }
 }

@@ -12,7 +12,7 @@ bool WiFiManager::connect(const String& ssid, const String& password) {
         if (WiFi.status() == WL_CONNECTED) {
             return true;
         }
-        delay(100);
+        yield();  // Неблокирующая пауза
     }
 
     return false;
