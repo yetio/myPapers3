@@ -63,7 +63,10 @@ enum ScreenType {
     TXT_VIEWER_SCREEN,
     IMG_VIEWER_SCREEN,
     CLEAR_SCREEN,
-    WIFI_SCREEN // Added WIFI_SCREEN
+    WIFI_SCREEN, // Added WIFI_SCREEN
+    APPS_SCREEN, // Added APPS_SCREEN
+    TEST_APP_SCREEN, // Added TEST_APP_SCREEN
+    TEST2_APP_SCREEN // Added TEST2_APP_SCREEN
 };
 
 // Declare global variables
@@ -107,6 +110,8 @@ namespace screens {
     String getCurrentTxtFile();
     String getCurrentImgFile();
     void drawClearScreen();
+    void startWiFiScan(); // Add declaration for starting Wi-Fi scan
+    void drawAppsScreen(); // Declare Apps screen drawing
 }
 
 // Declare updateHeader

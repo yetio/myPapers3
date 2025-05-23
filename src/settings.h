@@ -17,9 +17,15 @@ public:
     bool saveSettings();
     WiFiSettings getWiFiSettings() const;
     void setWiFiSettings(const String& ssid, const String& password);
+    String getLastConnectedSSID() const;
+    void setLastConnectedSSID(const String& ssid);
+    String getLastConnectedPassword() const;
+    void setLastConnectedPassword(const String& password);
 
 private:
     WiFiSettings _wifiSettings;
+    String _lastConnectedSSID;
+    String _lastConnectedPassword;
     const String _settingsFile = "/settings.json";
 
     bool _createDefaultSettings();

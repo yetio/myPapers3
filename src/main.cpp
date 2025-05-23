@@ -9,6 +9,7 @@
 #include "footer.h" // Include footer.h
 #include "settings.h" // Include settings.h
 #include "screens/wifi_screen.h" // Include Wi-Fi screen header
+#include "screens/apps_screen.h" // Include Apps screen header
 #include "keyboards/eng_keyboard.h" // Include English keyboard header
 
 bool isRendering = false;
@@ -39,17 +40,17 @@ void setup() {
     WiFiSettings wifiSettings = settings.getWiFiSettings();
 
     // Проверка наличия SSID и пароля
-    if (wifiSettings.ssid != "" && wifiSettings.password != "") {
-        // Попытка подключения к Wi-Fi только если пароль не пустой
-        WiFi.begin(wifiSettings.ssid.c_str(), wifiSettings.password.c_str());
-        if (WiFi.waitForConnectResult() == WL_CONNECTED) {
-            Serial.println("Connected to " + wifiSettings.ssid);
-        } else {
-            Serial.println("Failed to connect to " + wifiSettings.ssid);
-        }
-    } else {
-        Serial.println("Wi-Fi credentials are missing or incomplete. Skipping auto-connect.");
-    }
+    // if (wifiSettings.ssid != "" && wifiSettings.password != "") {
+    //     // Попытка подключения к Wi-Fi только если пароль не пустой
+    //     WiFi.begin(wifiSettings.ssid.c_str(), wifiSettings.password.c_str());
+    //     if (WiFi.waitForConnectResult() == WL_CONNECTED) {
+    //         Serial.println("Connected to " + wifiSettings.ssid);
+    //     } else {
+    //         Serial.println("Failed to connect to " + wifiSettings.ssid);
+    //     }
+    // } else {
+    //     Serial.println("Wi-Fi credentials are missing or incomplete. Skipping auto-connect.");
+    // }
 
     // Initialize UI
     setupUI();
@@ -91,7 +92,14 @@ void loop() {
                 if (buttonIndex < footer.getButtons().size()) {
                     Serial.println(footer.getButtons()[buttonIndex].label + " button pressed");
                     isRendering = true;
-                    footer.invokeButtonAction(buttonIndex);
+                    // Handle specific footer button actions based on screen
+                    if (currentScreen == WIFI_SCREEN && footer.getButtons()[buttonIndex].label == "Rfrsh") {
+                        displayMessage("Scanning for networks...");
+                        screens::startWiFiScan();
+                        renderCurrentScreen(); // Re-render to show scanning status
+                    } else {
+                        footer.invokeButtonAction(buttonIndex);
+                    }
                     isRendering = false;
                 }
             } else {
@@ -107,6 +115,10 @@ void loop() {
                         displayMessage("Wi-Fi pressed");
                         currentScreen = WIFI_SCREEN;
                         renderCurrentScreen();
+                    } else if (touchedRow == 6) { // Apps row is row 6
+                        displayMessage("Apps pressed");
+                        currentScreen = APPS_SCREEN;
+                        renderCurrentScreen();
                     }
                 }
                 // Handle Wi-Fi screen touch
@@ -114,15 +126,23 @@ void loop() {
                     if (screens::isPasswordInputActive) {
                         // Handle keyboard input
                         int keyRow = (y - (EPD_HEIGHT - (4 * 60) - 60)) / 60; // Adjust based on keyboard layout
-                        int keyCol = x / (EPD_WIDTH / 10);
-                        if (keyRow >= 0 && keyRow < 4 && keyCol >= 0 && keyCol < 10) {
-                            String key = keyboards::ENG_KEYBOARD_LAYOUT[keyRow][keyCol]; // Изменен тип и получение значения
+                        int keyCol = x / (EPD_WIDTH / 11); // Changed from 10 to 11
+                        if (keyRow >= 0 && keyRow < 4 && keyCol >= 0 && keyCol < 11) { // Changed boundary for keyCol
+                            const std::vector<std::vector<String>>& currentLayout = keyboards::getCurrentLayout(); // Get current layout
+                            String key = currentLayout[keyRow][keyCol]; // Use currentLayout for getting key
                             screens::handleKeyboardInput(key.c_str()); // Передача C-строки
                         }
                     } else {
                         // Handle Wi-Fi selection
                         int touchedRow = y / 60;
                         screens::handleWiFiSelection(touchedRow);
+                    }
+                }
+                // Handle Apps screen touch
+                else if (currentScreen == APPS_SCREEN) {
+                    int touchedRow = y / 60;
+                    if (touchedRow >= 3) { // App names start from row 3
+                         screens::handleAppsSelection(touchedRow);
                     }
                 }
             }

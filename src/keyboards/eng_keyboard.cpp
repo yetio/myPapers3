@@ -2,6 +2,22 @@
 #include "../ui.h"
 
 namespace keyboards {
+    // Define current keyboard state
+    KeyboardState currentKeyboardState = LOWERCASE; // Start with lowercase
+
+    // Function to get the current keyboard layout based on state
+    const std::vector<std::vector<String>>& getCurrentLayout() {
+        switch (currentKeyboardState) {
+            case UPPERCASE:
+                return ENG_KEYBOARD_LAYOUT_UPPER;
+            case SYMBOLS:
+                return ENG_KEYBOARD_LAYOUT_SYMBOLS;
+            case LOWERCASE:
+            default:
+                return ENG_KEYBOARD_LAYOUT_LOWER;
+        }
+    }
+
     void drawEngKeyboard() {
         // Определение размеров клавиатуры
         const int keyWidth = EPD_WIDTH / 11; // 11 кнопок в строке для размещения backspace
@@ -20,11 +36,12 @@ namespace keyboards {
                 // No background highlight for any keys
 
                 // Отрисовка текста кнопки
-                M5.Display.setCursor(x + (keyWidth - M5.Display.textWidth(ENG_KEYBOARD_LAYOUT[row][col].c_str())) / 2,
+                const std::vector<std::vector<String>>& currentLayout = getCurrentLayout(); // Get current layout
+                M5.Display.setCursor(x + (keyWidth - M5.Display.textWidth(currentLayout[row][col].c_str())) / 2,
                                    y + (keyHeight - M5.Display.fontHeight()) / 2);
                 M5.Display.setTextColor(TFT_BLACK);
                 M5.Display.setTextSize(2);
-                M5.Display.print(ENG_KEYBOARD_LAYOUT[row][col]);
+                M5.Display.print(currentLayout[row][col]); // Use currentLayout for printing
             }
         }
 

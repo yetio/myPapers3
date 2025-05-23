@@ -2,6 +2,10 @@
 #include "ui.h"
 #include <WiFi.h> // Added for using WiFi
 
+// Include test app headers
+#include "apps/test/app_screen.h"
+#include "apps/test2/app_screen.h"
+
 // Флаг первого рендера: на нем - полное обновление, далее - быстрый DU4
 static bool firstRenderDone = false;
 
@@ -84,6 +88,11 @@ void renderCurrentScreen() {
     rowsBuffer.clear();
     updateHeader();
 
+    // Clear content area before drawing
+    RowPosition contentStart = getRowPosition(2);
+    RowPosition footerStart = getRowPosition(15);
+    M5.Display.fillRect(contentStart.x, contentStart.y, contentStart.width, footerStart.y - contentStart.y, TFT_WHITE);
+
     switch(currentScreen) {
         case MAIN_SCREEN: {
             std::vector<FooterButton> mainFooterButtons = {
@@ -132,6 +141,35 @@ void renderCurrentScreen() {
         case WIFI_SCREEN: // Handle Wi-Fi screen
             screens::drawWifiScreen();
             break;
+        case APPS_SCREEN: // Handle Apps screen
+            screens::drawAppsScreen();
+            break;
+        case TEST_APP_SCREEN: // Handle Test app screen
+            // Set footer buttons for test app screen
+            {
+                std::vector<FooterButton> appFooterButtons = {
+                    {"Home", homeAction},
+                    {"Off", showOffScreen},
+                    {"", nullptr}, // Empty button for spacing
+                    {"", nullptr}  // Empty button for spacing
+                };
+                footer.setButtons(appFooterButtons);
+                apps_test::drawAppScreen();
+            }
+            break;
+        case TEST2_APP_SCREEN: // Handle Test2 app screen
+            // Set footer buttons for test2 app screen
+            {
+                std::vector<FooterButton> appFooterButtons = {
+                    {"Home", homeAction},
+                    {"Off", showOffScreen},
+                    {"", nullptr}, // Empty button for spacing
+                    {"", nullptr}  // Empty button for spacing
+                };
+                footer.setButtons(appFooterButtons);
+                apps_test2::drawAppScreen();
+            }
+            break;
         default:
             break;
     }
@@ -148,7 +186,7 @@ void renderCurrentScreen() {
         M5.Display.display();
         firstRenderDone = true;
     } else {
-        // Частичное обновление региона контента (строки 2..15)
+        // Частичное обновление региона контента (от строки 2 до футера)
         RowPosition start = getRowPosition(2);
         RowPosition footerPos = getRowPosition(15);
         int regionY = start.y;

@@ -19,8 +19,11 @@ namespace screens {
             ::bufferRow("Wi-Fi: Not connected", 5, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
         }
 
+        // Add Apps row (row 6)
+        ::bufferRow("Apps", 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true); // Added Apps row
+
         // Clear unused rows
-        for (int row = 6; row <= 13; ++row) {
+        for (int row = 7; row <= 13; ++row) { // Start clearing from row 7
             ::bufferRow("", row, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         }
     }
