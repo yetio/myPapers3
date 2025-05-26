@@ -11,6 +11,7 @@
 #include "screens/wifi_screen.h" // Include Wi-Fi screen header
 #include "screens/apps_screen.h" // Include Apps screen header
 #include "keyboards/eng_keyboard.h" // Include English keyboard header
+#include "sd_gateway.h"
 
 bool isRendering = false;
 
@@ -61,6 +62,7 @@ void setup() {
 void loop() {
     M5.update();
     updateUI();
+    sd_gateway::loop();
 
     if (isRendering) {
         // Block actions during rendering
@@ -115,7 +117,14 @@ void loop() {
                         displayMessage("Wi-Fi pressed");
                         currentScreen = WIFI_SCREEN;
                         renderCurrentScreen();
-                    } else if (touchedRow == 6) { // Apps row is row 6
+                    } else if (touchedRow == 6) { // SD Gateway row is row 6
+                        if (WiFi.status() != WL_CONNECTED) {
+                            displayMessage("Wi-Fi не подключен");
+                        } else {
+                            sd_gateway::toggleOrShow();
+                        }
+                        renderCurrentScreen();
+                    } else if (touchedRow == 7) { // Apps row is row 7
                         displayMessage("Apps pressed");
                         currentScreen = APPS_SCREEN;
                         renderCurrentScreen();

@@ -19,6 +19,7 @@
 #include "screens/img_viewer_screen.h"
 #include "screens/clear_screen.h"
 #include "screens/wifi_screen.h" // Include Wi-Fi screen header
+#include "screens/sd_gateway_screen.h"
 
 // Include button action headers
 #include "buttons/home.h"
@@ -66,7 +67,8 @@ enum ScreenType {
     WIFI_SCREEN, // Added WIFI_SCREEN
     APPS_SCREEN, // Added APPS_SCREEN
     TEST_APP_SCREEN, // Added TEST_APP_SCREEN
-    TEST2_APP_SCREEN // Added TEST2_APP_SCREEN
+    TEST2_APP_SCREEN, // Added TEST2_APP_SCREEN
+    SD_GATEWAY_SCREEN // Новый экран SD Gateway
 };
 
 // Declare global variables
@@ -104,14 +106,17 @@ namespace screens {
     void drawOffScreen();
     void drawTxtViewerScreen(const String& filename);
     void drawImgViewerScreen(const String& filename);
-    void drawWifiScreen(); // Declare Wi-Fi screen drawing
+    void drawWifiScreen(); // Include Wi-Fi screen header
     void displayFullScreenFile(const String& filename);
     void displayFullScreenImgFile(const String& filename);
     String getCurrentTxtFile();
     String getCurrentImgFile();
     void drawClearScreen();
-    void startWiFiScan(); // Add declaration for starting Wi-Fi scan
-    void drawAppsScreen(); // Declare Apps screen drawing
+    void startWiFiScan();
+    void drawAppsScreen();
+    // SD Gateway
+    void drawSdGatewayScreen();
+    void handleSdGatewayAction();
 }
 
 // Declare updateHeader

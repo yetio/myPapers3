@@ -170,6 +170,17 @@ void renderCurrentScreen() {
                 apps_test2::drawAppScreen();
             }
             break;
+        case SD_GATEWAY_SCREEN: {
+            std::vector<FooterButton> sdgwFooterButtons = {
+                {"Home", homeAction},
+                {"Off", showOffScreen},
+                {"Rfrsh", refreshUI},
+                {"Files", filesAction}
+            };
+            footer.setButtons(sdgwFooterButtons);
+            screens::drawSdGatewayScreen();
+            break;
+        }
         default:
             break;
     }

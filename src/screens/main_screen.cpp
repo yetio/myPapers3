@@ -3,6 +3,7 @@
 #include "../ui.h"
 #include "../battery.h"
 #include "../sdcard.h"
+#include "../sd_gateway.h"
 #include <WiFi.h> // Added for using WiFi
 
 namespace screens {
@@ -19,11 +20,19 @@ namespace screens {
             ::bufferRow("Wi-Fi: Not connected", 5, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
         }
 
-        // Add Apps row (row 6)
-        ::bufferRow("Apps", 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true); // Added Apps row
+        // SD Gateway row (row 6, кликабельная)
+        // Обработка нажатия реализована в main.cpp через sd_gateway::toggleOrShow()
+        String sdgwState = sd_gateway::isActive() ? "On" : "Off";
+        ::bufferRow("SD Gateway: " + sdgwState, 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
+
+        // TODO: локализация строк SD Gateway и Apps
+
+        // Apps row (row 7, кликабельная)
+        // Обработка нажатия реализована в main.cpp
+        ::bufferRow("Apps", 7, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
 
         // Clear unused rows
-        for (int row = 7; row <= 13; ++row) { // Start clearing from row 7
+        for (int row = 8; row <= 13; ++row) {
             ::bufferRow("", row, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         }
     }

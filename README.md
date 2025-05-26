@@ -15,6 +15,7 @@
 - **sdcard.[h/cpp]** — SD card operations: reading, writing, presence check.
 - **settings.[h/cpp]** — storage and management of user settings.
 - **ui.[h/cpp]** — basic user interface functions.
+- **sd_gateway.[h/cpp]** — SD Gateway: web interface for uploading, deleting, batch deleting, and editing txt/json files on the SD card via browser.
 
 ### Directories
 
@@ -32,6 +33,7 @@
 - Multiple screens for different tasks (file viewing, image viewing, text viewing, Wi-Fi management).
 - Event logging and handling.
 - Support for control via physical and virtual buttons.
+- **SD Gateway:** Web interface for uploading, deleting, batch deleting, and editing txt/json files directly from your browser.
 
 ## Platform
 
@@ -75,6 +77,7 @@ The project is easily extensible by adding new screens, services, and button han
 - **sdcard.[h/cpp]** — работа с SD-картой: чтение, запись, проверка наличия.
 - **settings.[h/cpp]** — хранение и управление пользовательскими настройками.
 - **ui.[h/cpp]** — базовые функции пользовательского интерфейса.
+- **sd_gateway.[h/cpp]** — SD Gateway: веб-интерфейс для загрузки, удаления, массового удаления и редактирования txt/json файлов на SD-карте через браузер.
 
 ### Каталоги
 
@@ -92,6 +95,7 @@ The project is easily extensible by adding new screens, services, and button han
 - Несколько экранов для различных задач (просмотр файлов, изображений, текста, управление Wi-Fi).
 - Логирование и обработка событий.
 - Поддержка управления через физические и виртуальные кнопки.
+- **SD Gateway:** Веб-интерфейс для загрузки, удаления, массового удаления и редактирования txt/json файлов прямо из браузера.
 
 ## Платформа
 
@@ -118,60 +122,62 @@ The project is easily extensible by adding new screens, services, and button han
 
 ---
 
-## 日本語訳
+## 中文简介
 
-> **注意:** このプロジェクトはLLM（vibe coding）を使って作成されました。
+> **注意：** 本项目由 LLM (vibe coding) 协助创建。
 
-> **警告:** これは非常に初期で未完成のバージョンです。多くのバグがあり、特に電源オフ時にもバッテリーが消耗する既知の問題があります。
+> **警告：** 这是非常早期和原始的版本，存在许多已知和未知的 bug，包括关机时电池仍然会放电的问题。
 
-**hi5stack** は、PlatformIO を使用して実装された M5Stack/M5Paper（ESP32）ベースのマイコンデバイス向けプロジェクトです。ファイル管理、SDカード、Wi-Fi、キーボード、さまざまな画面をサポートするモジュラーUIの作成を目的としています。
+**hi5stack** 是一个基于 M5Stack/M5Paper (ESP32) 的微控制器项目，使用 PlatformIO 实现。该项目旨在创建一个模块化的用户界面，支持文件管理、SD 卡、Wi-Fi、屏幕键盘和多种界面。
 
-## アーキテクチャと主なモジュール
+## 架构与主要模块
 
-- **main.cpp** — アプリケーションのエントリーポイント、システム初期化、メインループ。
-- **battery.[h/cpp]** — デバイスのバッテリー状態の監視。
-- **button.[h/cpp]** — 物理ボタンの基本的な処理。
-- **footer.[h/cpp]** — インターフェースのフッターパネルの表示。
-- **sdcard.[h/cpp]** — SDカードの操作：読み取り、書き込み、存在チェック。
-- **settings.[h/cpp]** — ユーザー設定の保存と管理。
-- **ui.[h/cpp]** — 基本的なユーザーインターフェース機能。
+- **main.cpp** — 应用入口，系统初始化和主循环。
+- **battery.[h/cpp]** — 设备电池状态监控。
+- **button.[h/cpp]** — 物理按键处理。
+- **footer.[h/cpp]** — 底部面板显示。
+- **sdcard.[h/cpp]** — SD 卡操作：读写、检测。
+- **settings.[h/cpp]** — 用户设置的存储与管理。
+- **ui.[h/cpp]** — 基础 UI 功能。
+- **sd_gateway.[h/cpp]** — SD Gateway：通过浏览器上传、删除、批量删除、编辑 txt/json 文件的网页界面。
 
-### ディレクトリ
+### 目录结构
 
-- **buttons/** — 各種インターフェースボタン（home, files, freeze, off, rfrsh）の個別ハンドラ。
-- **keyboards/** — オンスクリーンキーボードのサポート（例：英語キーボード）。
-- **network/** — Wi-Fi接続管理（wifi_manager）。
-- **screens/** — インターフェース画面：メイン、ファイルマネージャ、画像ビューア、テキストビューア、Wi-Fi、クリア、電源オフ。
-- **services/** — サービスモジュール（例：イベントロギング logger）。
+- **buttons/** — 各种界面按钮的独立处理器（home, files, freeze, off, rfrsh）。
+- **keyboards/** — 屏幕键盘支持（如英文键盘）。
+- **network/** — Wi-Fi 连接管理（wifi_manager）。
+- **screens/** — 各种界面：主界面、文件管理器、图片查看器、文本查看器、Wi-Fi、清屏、关机。
+- **services/** — 服务模块，如事件日志（logger）。
 
-## 主な特徴
+## 主要特性
 
-- 機能ごとに分離されたモジュラーアーキテクチャ。
-- SDカードとファイルシステムのサポート。
-- Wi-Fiとオンスクリーンキーボードのサポート。
-- 複数の画面で様々なタスクに対応（ファイル閲覧、画像閲覧、テキスト閲覧、Wi-Fi管理）。
-- イベントのロギングと処理。
-- 物理ボタンと仮想ボタンによる操作サポート。
+- 按功能模块化架构。
+- 支持 SD 卡和文件系统。
+- 支持 Wi-Fi 和屏幕键盘。
+- 多界面支持不同任务（文件、图片、文本查看，Wi-Fi 管理等）。
+- 事件日志与处理。
+- 支持物理和虚拟按钮控制。
+- **SD Gateway：** 通过网页上传、删除、批量删除、直接编辑 txt/json 文件。
 
-## プラットフォーム
+## 平台
 
-- **ハードウェア:** M5Stack/M5Paper（ESP32）
-- **開発環境:** PlatformIO
+- **硬件：** M5Stack/M5Paper (ESP32)
+- **开发环境：** PlatformIO
 
-## はじめに
+## 快速开始
 
-1. PlatformIOをインストールしてください。
-2. PlatformIO IDEでプロジェクトを開きます。
-3. M5Stack/M5Paperデバイスを接続します。
-4. プロジェクトをビルドしてデバイスに書き込みます。
+1. 安装 PlatformIO。
+2. 在 PlatformIO IDE 中打开项目。
+3. 连接 M5Stack/M5Paper 设备。
+4. 编译并上传项目到设备。
 
-## リポジトリ構成
+## 仓库结构
 
-- `src/` — アプリケーションのソースコード。
-- `lib/` — サードパーティ製ライブラリ（使用されている場合）。
-- `include/` — グローバルに使用するヘッダファイル。
-- `test/` — テスト。
+- `src/` — 应用源代码。
+- `lib/` — 第三方库（如有）。
+- `include/` — 全局头文件。
+- `test/` — 测试。
 
 ---
 
-新しい画面、サービス、ボタンハンドラを追加することで簡単に拡張できます。
+该项目可通过添加新界面、服务和按钮处理器轻松扩展。
