@@ -2,12 +2,12 @@
 #include "ui.h"
 #include <WiFi.h> // Added for using WiFi
 
-// Include test app headers
-#include "apps/test/app_screen.h"
+// Include app headers
+#include "apps/text_lang_test/app_screen.h"
 #include "apps/test2/app_screen.h"
 
 // Флаг первого рендера: на нем - полное обновление, далее - быстрый DU4
-static bool firstRenderDone = false;
+bool firstRenderDone = false;
 
 // Initialize footer
 Footer footer;
@@ -18,6 +18,11 @@ ScreenType currentScreen = MAIN_SCREEN;
 String currentPath = "/";
 std::vector<String> displayedFiles;
 std::vector<BufferedRow> rowsBuffer;
+
+// Функция для установки универсального шрифта
+void setUniversalFont() {
+    M5.Display.setFont(UNIVERSAL_FONT);
+}
 
 // Row position structure
 RowPosition getRowPosition(int row) {
@@ -35,7 +40,7 @@ void drawRow(const String& text, int row, uint16_t textColor, uint16_t bgColor, 
     
     if (underline) {
         int textWidth = M5.Display.textWidth(text.c_str());
-        int underlineY = pos.y + 30; // Adjust based on font size
+        int underlineY = pos.y + 40; // Увеличен отступ для правильного подчёркивания
         M5.Display.drawLine(pos.x + 10, underlineY, pos.x + 10 + textWidth, underlineY, TFT_BLACK);
     }
 }
@@ -66,6 +71,9 @@ void updateHeader() {
 
 // Initialize UI
 void setupUI() {
+    // Устанавливаем универсальный шрифт
+    setUniversalFont();
+    
     // Setup initial screen elements
     currentScreen = MAIN_SCREEN;
     
@@ -84,6 +92,9 @@ void setupUI() {
 // Render the current screen with all elements
 void renderCurrentScreen() {
     M5.Display.startWrite();
+
+    // Устанавливаем универсальный шрифт перед отрисовкой
+    setUniversalFont();
 
     rowsBuffer.clear();
     updateHeader();
@@ -144,8 +155,8 @@ void renderCurrentScreen() {
         case APPS_SCREEN: // Handle Apps screen
             screens::drawAppsScreen();
             break;
-        case TEST_APP_SCREEN: // Handle Test app screen
-            // Set footer buttons for test app screen
+        case TEXT_LANG_TEST_SCREEN: // Handle Text language font test app screen
+            // Set footer buttons for text language test app screen
             {
                 std::vector<FooterButton> appFooterButtons = {
                     {"Home", homeAction},
@@ -154,7 +165,7 @@ void renderCurrentScreen() {
                     {"", nullptr}  // Empty button for spacing
                 };
                 footer.setButtons(appFooterButtons);
-                apps_test::drawAppScreen();
+                apps_text_lang_test::drawAppScreen();
             }
             break;
         case TEST2_APP_SCREEN: // Handle Test2 app screen
@@ -225,6 +236,66 @@ void displayMessage(const String& msg) {
 void clearMessage() {
     currentMessage.text = "";
     renderCurrentScreen();
+}
+
+// Функция для переноса длинных строк текста
+std::vector<String> wordWrap(const String& text, int maxWidth) {
+    std::vector<String> lines;
+    if (text.length() == 0) {
+        return lines;
+    }
+    
+    // Устанавливаем шрифт для корректного расчета ширины текста
+    ::setUniversalFont();
+    
+    String line = "";
+    String word = "";
+    int spaceWidth = M5.Display.textWidth(" ");
+    
+    for (unsigned int i = 0; i < text.length(); i++) {
+        char c = text[i];
+        
+        if (c == ' ' || c == '\n') {
+            // Если текущая строка + слово + пробел шире максимальной ширины
+            if (line.length() > 0 && 
+                M5.Display.textWidth((line + word + " ").c_str()) > maxWidth) {
+                lines.push_back(line);
+                line = word + " ";
+            } else {
+                line += word + " ";
+            }
+            word = "";
+            
+            // Если встретили перенос строки, завершаем текущую строку
+            if (c == '\n') {
+                line.trim();
+                lines.push_back(line);
+                line = "";
+            }
+        } else {
+            word += c;
+        }
+    }
+    
+    // Добавляем последнее слово
+    if (word.length() > 0) {
+        // Если текущая строка + последнее слово шире максимальной ширины
+        if (line.length() > 0 && 
+            M5.Display.textWidth((line + word).c_str()) > maxWidth) {
+            lines.push_back(line);
+            line = word;
+        } else {
+            line += word;
+        }
+    }
+    
+    // Добавляем последнюю строку, если она не пустая
+    if (line.length() > 0) {
+        line.trim();
+        lines.push_back(line);
+    }
+    
+    return lines;
 }
 
 // Navigate to a specific path

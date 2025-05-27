@@ -27,15 +27,16 @@ void Footer::draw(bool visible) {
     
     int currentX = pos.x + padding;
     int textY = pos.y + 10;
-    int underlineY = pos.y + 30; // Adjust based on font size
+    int underlineY = pos.y + 40; // Увеличен отступ для правильного подчёркивания
 
-    // Removed separator as per instruction
+    // Устанавливаем универсальный шрифт для футера
+    ::setUniversalFont();
 
     for (const auto& button : buttons) {
         // Draw button label
         M5.Display.setCursor(currentX, textY);
         M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
-        M5.Display.setTextSize(3);
+        M5.Display.setTextSize(FONT_SIZE_ALL); // Используем общий размер шрифта
         M5.Display.print(button.label);
         
         // Calculate text width for underline

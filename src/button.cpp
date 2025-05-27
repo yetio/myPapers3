@@ -1,5 +1,6 @@
 // button.cpp
 #include "button.h"
+#include "ui.h"  // Добавляем включение для доступа к FONT_SIZE_ALL и setUniversalFont
 
 Button::Button(int x, int y, int width, int height, const String& label, std::function<void()> onPress)
     : _x(x), _y(y), _width(width), _height(height), _label(label), _onPress(onPress) {}
@@ -13,8 +14,9 @@ void Button::draw() const {
     M5.Display.drawRect(_x, _y, _width, _height, TFT_BLACK);
 
     // Set text properties
+    ::setUniversalFont();
     M5.Display.setTextColor(textColor, btnColor);
-    M5.Display.setTextSize(3);
+    M5.Display.setTextSize(FONT_SIZE_ALL);
     int txtWidth = M5.Display.textWidth(_label.c_str());
     int txtX = _x + (_width - txtWidth) / 2;
     int txtY = _y + (_height - 24) / 2; // 24 - approximate text height

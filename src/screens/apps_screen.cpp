@@ -3,14 +3,14 @@
 #include <vector>
 #include <String>
 
-// Include test app headers
-#include "../apps/test/app_screen.h"
+// Include app headers
+#include "../apps/text_lang_test/app_screen.h"
 #include "../apps/test2/app_screen.h"
 
 namespace screens {
 
     // Static list of applications
-    const std::vector<String> installedApps = {"test", "test2"}; // Hardcoded list based on src/apps
+    const std::vector<String> installedApps = {"text_lang_test", "test2"}; // Hardcoded list based on src/apps
 
     void drawAppsScreen() {
         ::updateHeader(); // Update header for this screen
@@ -39,10 +39,10 @@ namespace screens {
             String selectedApp = installedApps[selectedRow - 3];
             
             // Check which app was selected and call its drawing function
-            if (selectedApp == "test") {
-                ::displayMessage("Launching test app...");
-                // Set current screen to TEST_APP_SCREEN
-                ::currentScreen = TEST_APP_SCREEN;
+            if (selectedApp == "text_lang_test") {
+                ::displayMessage("Text Language Font Test app");
+                // Set current screen to TEXT_LANG_TEST_SCREEN
+                ::currentScreen = TEXT_LANG_TEST_SCREEN;
                 ::renderCurrentScreen(); // Re-render to show app screen
             } else if (selectedApp == "test2") {
                 ::displayMessage("Launching test2 app...");

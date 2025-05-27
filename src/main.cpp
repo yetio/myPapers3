@@ -12,6 +12,7 @@
 #include "screens/apps_screen.h" // Include Apps screen header
 #include "keyboards/eng_keyboard.h" // Include English keyboard header
 #include "sd_gateway.h"
+#include "apps/text_lang_test/app_screen.h" // Include Text Language Test app header
 
 bool isRendering = false;
 

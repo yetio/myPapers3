@@ -77,7 +77,7 @@ namespace screens {
         fileLower.toLowerCase();
 
         if (!fileLower.endsWith(".bmp")) {
-            M5.Display.setTextSize(2);
+            ::setUniversalFont();
             M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
             M5.Display.drawString("Unsupported file format", frameLeft + 20, frameTop + 20);
             return;
@@ -86,7 +86,7 @@ namespace screens {
         // Open file
         File file = SD.open(filename, FILE_READ);
         if (!file) {
-            M5.Display.setTextSize(2);
+            ::setUniversalFont();
             M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
             M5.Display.drawString("Error opening file", frameLeft + 20, frameTop + 20);
             return;
@@ -97,7 +97,7 @@ namespace screens {
         if (fileSize > 0) {
             // Check if file size is reasonable (e.g., max 8MB)
             if (fileSize > 8 * 1024 * 1024) {
-                M5.Display.setTextSize(2);
+                ::setUniversalFont();
                 M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
                 M5.Display.drawString("File too large", frameLeft + 20, frameTop + 20);
                 file.close();
@@ -106,7 +106,7 @@ namespace screens {
 
             uint8_t *fileData = (uint8_t *)malloc(fileSize);
             if (!fileData) {
-                M5.Display.setTextSize(2);
+                ::setUniversalFont();
                 M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
                 M5.Display.drawString("Out of memory", frameLeft + 20, frameTop + 20);
                 file.close();
@@ -115,7 +115,7 @@ namespace screens {
 
             size_t bytesRead = file.read(fileData, fileSize);
             if (bytesRead != fileSize) {
-                M5.Display.setTextSize(2);
+                ::setUniversalFont();
                 M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
                 M5.Display.drawString("Error reading file", frameLeft + 20, frameTop + 20);
                 free(fileData);
@@ -150,7 +150,7 @@ namespace screens {
                 size_t bufferSize = scaledWidth * scaledHeight * sizeof(uint16_t);
                 uint16_t* scaledBuffer = (uint16_t*)malloc(bufferSize);
                 if (!scaledBuffer) {
-                    M5.Display.setTextSize(2);
+                    ::setUniversalFont();
                     M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
                     M5.Display.drawString("Out of memory for scaling", frameLeft + 20, frameTop + 20);
                     free(fileData);
@@ -179,7 +179,7 @@ namespace screens {
         // Open file
         File file = SD.open(filename, FILE_READ);
         if (!file) {
-            M5.Display.setTextSize(2);
+            ::setUniversalFont();
             M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
             M5.Display.drawString("Error opening file", 20, 20);
             return;
@@ -188,7 +188,7 @@ namespace screens {
         // Read file data
         size_t fileSize = file.size();
         if (fileSize == 0 || fileSize > 8 * 1024 * 1024) {
-            M5.Display.setTextSize(2);
+            ::setUniversalFont();
             M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
             M5.Display.drawString("Invalid file size", 20, 20);
             file.close();
@@ -197,7 +197,7 @@ namespace screens {
 
         uint8_t *fileData = (uint8_t *)malloc(fileSize);
         if (!fileData) {
-            M5.Display.setTextSize(2);
+            ::setUniversalFont();
             M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
             M5.Display.drawString("Out of memory", 20, 20);
             file.close();
@@ -206,7 +206,7 @@ namespace screens {
 
         size_t bytesRead = file.read(fileData, fileSize);
         if (bytesRead != fileSize) {
-            M5.Display.setTextSize(2);
+            ::setUniversalFont();
             M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
             M5.Display.drawString("Error reading file", 20, 20);
             free(fileData);
@@ -241,9 +241,9 @@ namespace screens {
             size_t bufferSize = scaledWidth * scaledHeight * sizeof(uint16_t);
             uint16_t* scaledBuffer = (uint16_t*)malloc(bufferSize);
             if (!scaledBuffer) {
-                M5.Display.setTextSize(2);
+                ::setUniversalFont();
                 M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
-                M5.Display.drawString("Out of memory for scaling", 20, 20);
+                M5.Display.drawString("Out of memory for scaling", frameLeft + 20, frameTop + 20);
                 free(fileData);
                 file.close();
                 return;

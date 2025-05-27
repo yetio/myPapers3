@@ -30,7 +30,13 @@
 
 const int EPD_WIDTH = 540;
 const int EPD_HEIGHT = 960;
-const int FONT_SIZE_ALL = 3;
+const float FONT_SIZE_ALL = 3;
+
+// Универсальный шрифт для всего проекта
+const lgfx::IFont* const UNIVERSAL_FONT = &fonts::efontCN_12;
+
+// Флаг для управления типом обновления экрана (полное/частичное)
+extern bool firstRenderDone;
 
 // Message structure
 struct Message {
@@ -66,7 +72,7 @@ enum ScreenType {
     CLEAR_SCREEN,
     WIFI_SCREEN, // Added WIFI_SCREEN
     APPS_SCREEN, // Added APPS_SCREEN
-    TEST_APP_SCREEN, // Added TEST_APP_SCREEN
+    TEXT_LANG_TEST_SCREEN, // Added TEXT_LANG_TEST_SCREEN
     TEST2_APP_SCREEN, // Added TEST2_APP_SCREEN
     SD_GATEWAY_SCREEN // Новый экран SD Gateway
 };
@@ -87,10 +93,16 @@ void updateUI();
 void displayMessage(const String& msg);
 void clearMessage();
 
+// Функция для переноса длинных строк текста
+std::vector<String> wordWrap(const String& text, int maxWidth);
+
 // Added declarations
 void bufferRow(const String& text, int row, uint16_t textColor = TFT_BLACK, uint16_t bgColor = TFT_WHITE, int fontSize = FONT_SIZE_ALL, bool underline = false); // Updated signature
 void drawRowsBuffered();
 void renderCurrentScreen();
+
+// Функция для установки универсального шрифта
+void setUniversalFont();
 
 // Navigation functions
 void navigateTo(const String& path);

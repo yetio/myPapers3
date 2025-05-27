@@ -7,6 +7,9 @@ namespace screens {
     static String currentFileOpened = "";
 
     void drawTxtViewerScreen(const String& filename) {
+        // Устанавливаем универсальный шрифт
+        ::setUniversalFont();
+        
         currentFileOpened = filename;
         // Clear all rows except headers
         for (int row = 2; row <= 14; ++row) { // Use rows 2-14
@@ -41,12 +44,28 @@ namespace screens {
         }
 
         int row = 3;
-        while (file.available() && row < 14) { // Adjusted rows for headers
+        const int maxRowsAvailable = 13; // От 3 до 13 (всего 11 строк)
+        
+        while (file.available() && row <= maxRowsAvailable) {
             String line = file.readStringUntil('\n');
             line.trim(); // Remove leading and trailing whitespace
             if (line.length() > 0) { // Skip empty lines
-                ::bufferRow(line, row);
-                row++;
+                // Получаем размеры строки
+                RowPosition pos = getRowPosition(row);
+                int maxWidth = pos.width - 20; // 10px с каждой стороны
+                
+                // Разбиваем длинную строку на несколько строк с учетом переноса слов
+                std::vector<String> wrappedLines = ::wordWrap(line, maxWidth);
+                
+                // Отображаем каждую строку
+                for (const auto& wrappedLine : wrappedLines) {
+                    if (row <= maxRowsAvailable) {
+                        ::bufferRow(wrappedLine, row);
+                        row++;
+                    } else {
+                        break; // Достигли максимального количества строк
+                    }
+                }
             }
         }
 
@@ -54,6 +73,9 @@ namespace screens {
     }
 
     void displayFullScreenFile(const String& filename) {
+        // Устанавливаем универсальный шрифт
+        ::setUniversalFont();
+        
         File file = SD.open(filename);
         if (!file) {
             ::bufferRow("Failed to open file", 3);
@@ -68,12 +90,28 @@ namespace screens {
         ::bufferRow("Full Screen Text", 2);
 
         int row = 3;
-        while (file.available() && row < 14) { // Fill up to row 13
+        const int maxRowsAvailable = 13; // От 3 до 13 (всего 11 строк)
+        
+        while (file.available() && row <= maxRowsAvailable) {
             String line = file.readStringUntil('\n');
             line.trim(); // Remove leading and trailing whitespace
             if (line.length() > 0) { // Skip empty lines
-                ::bufferRow(line, row);
-                row++;
+                // Получаем размеры строки
+                RowPosition pos = getRowPosition(row);
+                int maxWidth = pos.width - 20; // 10px с каждой стороны
+                
+                // Разбиваем длинную строку на несколько строк с учетом переноса слов
+                std::vector<String> wrappedLines = ::wordWrap(line, maxWidth);
+                
+                // Отображаем каждую строку
+                for (const auto& wrappedLine : wrappedLines) {
+                    if (row <= maxRowsAvailable) {
+                        ::bufferRow(wrappedLine, row);
+                        row++;
+                    } else {
+                        break; // Достигли максимального количества строк
+                    }
+                }
             }
         }
 
