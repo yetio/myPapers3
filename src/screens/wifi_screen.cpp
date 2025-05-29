@@ -1,7 +1,9 @@
 #include "wifi_screen.h"
+#include "../debug_config.h"
 #include "../ui.h"
-#include "../settings.h"
+#include "../footer.h"
 #include "../keyboards/eng_keyboard.h"
+#include "../settings.h"
 
 namespace screens {
     static String selectedSSID = "";
@@ -226,8 +228,10 @@ namespace screens {
     }
 
     void handleKeyboardInput(String key) { // Изменен тип переменной key на String
+        #ifdef DEBUG_KEYBOARD
         Serial.print("Received key: ");
         Serial.println(key);
+        #endif
 
         if (key == "<") { // Изменено на строковый литерал
             if (passwordInput.length() > 0) {
@@ -245,7 +249,9 @@ namespace screens {
             renderCurrentScreen(); // Re-render to show new keyboard layout
         } else if (key == "C") { // Изменено на строковый литерал
             // Cancel button - return to WiFi networks list
+            #ifdef DEBUG_KEYBOARD
             Serial.println("Cancel button pressed in handleKeyboardInput");
+            #endif
             displayMessage("Cancel button pressed");
             isPasswordInputActive = false;
             selectedSSID = "";

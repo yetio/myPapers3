@@ -211,7 +211,11 @@ namespace screens {
                 currentScreen = TXT_VIEWER_SCREEN;
                 renderCurrentScreen();
             }
-            else if (filename.endsWith(".bmp")) { // Only bmp
+            // Поддержка различных форматов изображений (без GIF)
+            else if (filename.endsWith(".bmp") || 
+                     filename.endsWith(".jpg") || 
+                     filename.endsWith(".jpeg") || 
+                     filename.endsWith(".png")) {
                 navigateTo(currentPath + filename);
                 currentScreen = IMG_VIEWER_SCREEN;
                 renderCurrentScreen();

@@ -5,6 +5,7 @@
 
 #include "battery.h"
 #include "sdcard.h"
+#include "debug_config.h"
 #include "ui.h"
 #include "footer.h" // Include footer.h
 #include "settings.h" // Include settings.h
@@ -77,10 +78,12 @@ void loop() {
             M5.Display.convertRawXY(&tp, 1);
             int16_t x = tp.x;
             int16_t y = tp.y;
+            #ifdef DEBUG_TOUCH
             Serial.print("Touch detected at x: ");
             Serial.print(x);
             Serial.print(", y: ");
             Serial.println(y);
+            #endif
 
             // Handle footer touch
             if (footer.isVisible() && y >= (15 * 60)) { // Footer on row 15
@@ -93,7 +96,9 @@ void loop() {
                 buttonIndex = customClamp(buttonIndex, 0, buttonCount - 1);
 
                 if (buttonIndex < footer.getButtons().size()) {
+                    #ifdef DEBUG_TOUCH
                     Serial.println(footer.getButtons()[buttonIndex].label + " button pressed");
+                    #endif
                     isRendering = true;
                     // Handle specific footer button actions based on screen
                     if (currentScreen == WIFI_SCREEN && footer.getButtons()[buttonIndex].label == "Rfrsh") {
@@ -156,8 +161,7 @@ void loop() {
                     }
                 }
             }
-        } else {
-            Serial.println("No touch data available");
         }
+        // Убрано постоянное сообщение "No touch data available" для предотвращения спама в консоли
     }
 }

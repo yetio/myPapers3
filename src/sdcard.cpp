@@ -1,5 +1,6 @@
 // sdcard.cpp
 #include "sdcard.h"
+#include "debug_config.h"
 
 String sdCardStatus = "SD: Unknown";
 
@@ -41,12 +42,14 @@ void listFiles(const char* dirname) {
         if (!file) {
             break;
         }
+        #ifdef DEBUG_FILES
         Serial.print(file.name());
         if (file.isDirectory()) {
             Serial.println("/");
         } else {
             Serial.printf(" (file, %llu bytes)\n", file.size());
         }
+        #endif
         file.close();
     }
 }

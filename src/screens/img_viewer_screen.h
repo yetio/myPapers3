@@ -7,9 +7,10 @@
 namespace screens {
     void drawImgViewerScreen(const String& filename);
     void displayImgFile(const String& filename);
-    void displayFullScreenImgFile(const String& filename); // Added for Freeze action
+    void displayFullScreenImgFile(const String& filename);
     String getCurrentImgFile();
     void setupImgViewerButtons();
+    void clearImgViewerScreen();
 }
 
 #endif // IMG_VIEWER_SCREEN_H

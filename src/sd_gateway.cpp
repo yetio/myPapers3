@@ -3,6 +3,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include "sd_gateway.h"
+#include "debug_config.h"
 #include "ui.h"
 
 namespace sd_gateway {
@@ -65,8 +66,10 @@ namespace sd_gateway {
         }
         String filename = server->arg("file");
         if (!filename.startsWith("/")) filename = "/" + filename;
+        #ifdef DEBUG_SD_GATEWAY
         Serial.print("[SD Gateway] Delete request for: ");
         Serial.println(filename);
+        #endif
         if (SD.exists(filename)) {
             SD.remove(filename);
             server->sendHeader("Location", "/");
@@ -87,8 +90,10 @@ namespace sd_gateway {
             if (server->argName(i) == "file") {
                 String filename = server->arg(i);
                 if (!filename.startsWith("/")) filename = "/" + filename;
+                #ifdef DEBUG_SD_GATEWAY
                 Serial.print("[SD Gateway] Multi-delete: ");
                 Serial.println(filename);
+                #endif
                 if (SD.exists(filename)) {
                     SD.remove(filename);
                 }
@@ -221,4 +226,4 @@ namespace sd_gateway {
             server->handleClient();
         }
     }
-} 
+}
