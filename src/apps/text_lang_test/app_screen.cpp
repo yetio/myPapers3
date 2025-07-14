@@ -44,32 +44,40 @@ namespace apps_text_lang_test {
         M5.Display.setTextSize(testFontSize);
         
         // Английский
-        std::vector<String> wrappedEn = ::wordWrap(testPhraseEn, maxWidth / testFontSize * FONT_SIZE_ALL);
-        for (size_t i = 0; i < wrappedEn.size(); i++) {
+        String wrappedEn[10]; // Максимум 10 строк
+        int wrappedEnCount = 0;
+        ::wordWrap(testPhraseEn, maxWidth / testFontSize * FONT_SIZE_ALL, wrappedEn, wrappedEnCount, 10);
+        for (int i = 0; i < wrappedEnCount; i++) {
             M5.Display.drawString(wrappedEn[i], 10, y_pos + i * lineSpacing);
         }
         // Рассчитываем позицию для следующего блока текста с учётом количества строк
-        y_pos += y_spacing + (wrappedEn.size() > 1 ? (wrappedEn.size() - 1) * lineSpacing : 0);
+        y_pos += y_spacing + (wrappedEnCount > 1 ? (wrappedEnCount - 1) * lineSpacing : 0);
         
         // Русский
-        std::vector<String> wrappedRu = ::wordWrap(testPhraseRu, maxWidth / testFontSize * FONT_SIZE_ALL);
-        for (size_t i = 0; i < wrappedRu.size(); i++) {
+        String wrappedRu[10]; // Максимум 10 строк
+        int wrappedRuCount = 0;
+        ::wordWrap(testPhraseRu, maxWidth / testFontSize * FONT_SIZE_ALL, wrappedRu, wrappedRuCount, 10);
+        for (int i = 0; i < wrappedRuCount; i++) {
             M5.Display.drawString(wrappedRu[i], 10, y_pos + i * lineSpacing);
         }
         // Рассчитываем позицию для следующего блока текста с учётом количества строк
-        y_pos += y_spacing + (wrappedRu.size() > 1 ? (wrappedRu.size() - 1) * lineSpacing : 0);
+        y_pos += y_spacing + (wrappedRuCount > 1 ? (wrappedRuCount - 1) * lineSpacing : 0);
         
         // Японский
-        std::vector<String> wrappedJa = ::wordWrap(testPhraseJa, maxWidth / testFontSize * FONT_SIZE_ALL);
-        for (size_t i = 0; i < wrappedJa.size(); i++) {
+        String wrappedJa[10]; // Максимум 10 строк
+        int wrappedJaCount = 0;
+        ::wordWrap(testPhraseJa, maxWidth / testFontSize * FONT_SIZE_ALL, wrappedJa, wrappedJaCount, 10);
+        for (int i = 0; i < wrappedJaCount; i++) {
             M5.Display.drawString(wrappedJa[i], 10, y_pos + i * lineSpacing);
         }
         // Рассчитываем позицию для следующего блока текста с учётом количества строк
-        y_pos += y_spacing + (wrappedJa.size() > 1 ? (wrappedJa.size() - 1) * lineSpacing : 0);
+        y_pos += y_spacing + (wrappedJaCount > 1 ? (wrappedJaCount - 1) * lineSpacing : 0);
         
         // Китайский
-        std::vector<String> wrappedZh = ::wordWrap(testPhraseZh, maxWidth / testFontSize * FONT_SIZE_ALL);
-        for (size_t i = 0; i < wrappedZh.size(); i++) {
+        String wrappedZh[10]; // Максимум 10 строк
+        int wrappedZhCount = 0;
+        ::wordWrap(testPhraseZh, maxWidth / testFontSize * FONT_SIZE_ALL, wrappedZh, wrappedZhCount, 10);
+        for (int i = 0; i < wrappedZhCount; i++) {
             M5.Display.drawString(wrappedZh[i], 10, y_pos + i * lineSpacing);
         }
         
@@ -77,4 +85,4 @@ namespace apps_text_lang_test {
         M5.Display.setFont(currentFont);
         M5.Display.setTextSize(1.0); // Возвращаем стандартный размер
     }
-} 
+}

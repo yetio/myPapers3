@@ -16,8 +16,10 @@ Footer footer;
 Message currentMessage = {"", 0};
 ScreenType currentScreen = MAIN_SCREEN;
 String currentPath = "/";
-std::vector<String> displayedFiles;
-std::vector<BufferedRow> rowsBuffer;
+String displayedFiles[MAX_DISPLAYED_FILES];
+int displayedFilesCount = 0;
+BufferedRow rowsBuffer[MAX_ROWS_BUFFER];
+int rowsBufferCount = 0;
 
 // Функция для установки универсального шрифта
 void setUniversalFont() {
@@ -27,6 +29,11 @@ void setUniversalFont() {
 // Row position structure
 RowPosition getRowPosition(int row) {
     return RowPosition{0, row * 60, EPD_WIDTH, 60};
+}
+
+// Get row number from Y coordinate
+int getRowFromY(int y) {
+    return y / 60;
 }
 
 // Draw a single row on the screen with optional underline
@@ -47,16 +54,38 @@ void drawRow(const String& text, int row, uint16_t textColor, uint16_t bgColor, 
 
 // Draw all rows from buffer at once
 void drawRowsBuffered() {
-    for (const auto& row : rowsBuffer) {
-        bool isFooter = false; // Footer is handled separately
-        drawRow(row.text, row.row, row.textColor, row.bgColor, row.fontSize, row.underline);
+    for (int i = 0; i < rowsBufferCount; i++) {
+        drawRow(rowsBuffer[i].text, rowsBuffer[i].row, rowsBuffer[i].textColor, 
+                rowsBuffer[i].bgColor, rowsBuffer[i].fontSize, rowsBuffer[i].underline);
     }
-    rowsBuffer.clear(); // Clear buffer after rendering
+    rowsBufferCount = 0; // Clear buffer after rendering
 }
 
-// Add row to buffer
+// Add row to buffer with size limit
 void bufferRow(const String& text, int row, uint16_t textColor, uint16_t bgColor, int fontSize, bool underline) {
-    rowsBuffer.emplace_back(BufferedRow{text, row, textColor, bgColor, fontSize, underline});
+    // Ограничиваем размер буфера для предотвращения переполнения памяти
+    if (rowsBufferCount >= MAX_ROWS_BUFFER) {
+        // Очищаем весь буфер при переполнении для предотвращения ошибок памяти
+        for (int i = 0; i < MAX_ROWS_BUFFER; i++) {
+            rowsBuffer[i] = {"", 0, TFT_BLACK, TFT_WHITE, (int)FONT_SIZE_ALL, false};
+        }
+        rowsBufferCount = 0;
+    }
+    rowsBuffer[rowsBufferCount] = {text, row, textColor, bgColor, fontSize, underline};
+    rowsBufferCount++;
+}
+
+// Force clear all memory buffers to prevent memory leaks
+void clearAllBuffers() {
+    rowsBufferCount = 0;
+    displayedFilesCount = 0;
+    // Очищаем содержимое массивов
+    for (int i = 0; i < MAX_ROWS_BUFFER; i++) {
+        rowsBuffer[i] = {"", 0, TFT_BLACK, TFT_WHITE, (int)FONT_SIZE_ALL, false};
+    }
+    for (int i = 0; i < MAX_DISPLAYED_FILES; i++) {
+        displayedFiles[i] = "";
+    }
 }
 
 // Update the header with battery information
@@ -69,6 +98,42 @@ void updateHeader() {
     }
 }
 
+// Статические массивы кнопок для предотвращения переполнения стека
+static FooterButton mainFooterButtons[] = {
+    {"Home", homeAction},
+    {"Off", showOffScreen},
+    {"Rfrsh", refreshUI},
+    {"Files", filesAction}
+};
+
+static FooterButton filesFooterButtons[] = {
+    {"Home", homeAction},
+    {"Off", showOffScreen},
+    {"Rfrsh", refreshUI},
+    {"Files", filesAction}
+};
+
+static FooterButton viewerFooterButtons[] = {
+    {"Home", homeAction},
+    {"Off", showOffScreen},
+    {"Freeze", freezeAction},
+    {"Files", filesAction}
+};
+
+static FooterButton appFooterButtons[] = {
+    {"Home", homeAction},
+    {"Off", showOffScreen},
+    {"", nullptr}, // Empty button for spacing
+    {"", nullptr}  // Empty button for spacing
+};
+
+static FooterButton sdgwFooterButtons[] = {
+    {"Home", homeAction},
+    {"Off", showOffScreen},
+    {"Rfrsh", refreshUI},
+    {"Files", filesAction}
+};
+
 // Initialize UI
 void setupUI() {
     // Устанавливаем универсальный шрифт
@@ -77,14 +142,8 @@ void setupUI() {
     // Setup initial screen elements
     currentScreen = MAIN_SCREEN;
     
-    // Setup footer buttons for main screen
-    std::vector<FooterButton> mainFooterButtons = {
-        {"Home", homeAction},
-        {"Off", showOffScreen},
-        {"Rfrsh", refreshUI},
-        {"Files", filesAction}
-    };
-    footer.setButtons(mainFooterButtons);
+    // Setup footer buttons for main screen using static array
+    footer.setButtons(mainFooterButtons, 4);
     
     renderCurrentScreen();
 }
@@ -96,7 +155,8 @@ void renderCurrentScreen() {
     // Устанавливаем универсальный шрифт перед отрисовкой
     setUniversalFont();
 
-    rowsBuffer.clear();
+    // Очищаем только rowsBuffer перед рендерингом
+    rowsBufferCount = 0;
     updateHeader();
 
     // Clear content area before drawing
@@ -105,47 +165,26 @@ void renderCurrentScreen() {
     M5.Display.fillRect(contentStart.x, contentStart.y, contentStart.width, footerStart.y - contentStart.y, TFT_WHITE);
 
     switch(currentScreen) {
-        case MAIN_SCREEN: {
-            std::vector<FooterButton> mainFooterButtons = {
-                {"Home", homeAction},
-                {"Off", showOffScreen},
-                {"Rfrsh", refreshUI},
-                {"Files", filesAction}
-            };
-            footer.setButtons(mainFooterButtons);
+        case MAIN_SCREEN:
+            footer.setButtons(mainFooterButtons, 4);
             screens::drawMainScreen();
             break;
-        }
-        case FILES_SCREEN: {
-            std::vector<FooterButton> filesFooterButtons = {
-                {"Home", homeAction},
-                {"Off", showOffScreen},
-                {"Rfrsh", refreshUI},
-                {"Files", filesAction}
-            };
-            footer.setButtons(filesFooterButtons);
+        case FILES_SCREEN:
+            footer.setButtons(filesFooterButtons, 4);
             screens::drawFilesScreen();
             break;
-        }
         case OFF_SCREEN:
             screens::drawOffScreen();
             break;
         case TXT_VIEWER_SCREEN:
-        case IMG_VIEWER_SCREEN: {
-            std::vector<FooterButton> viewerFooterButtons = {
-                {"Home", homeAction},
-                {"Off", showOffScreen},
-                {"Freeze", freezeAction},
-                {"Files", filesAction}
-            };
-            footer.setButtons(viewerFooterButtons);
+        case IMG_VIEWER_SCREEN:
+            footer.setButtons(viewerFooterButtons, 4);
             if (currentScreen == TXT_VIEWER_SCREEN) {
                 screens::drawTxtViewerScreen(currentPath);
             } else {
                 screens::drawImgViewerScreen(currentPath);
             }
             break;
-        }
         case CLEAR_SCREEN:
             screens::drawClearScreen();
             break;
@@ -156,73 +195,40 @@ void renderCurrentScreen() {
             screens::drawAppsScreen();
             break;
         case TEXT_LANG_TEST_SCREEN: // Handle Text language font test app screen
-            // Set footer buttons for text language test app screen
-            {
-                std::vector<FooterButton> appFooterButtons = {
-                    {"Home", homeAction},
-                    {"Off", showOffScreen},
-                    {"", nullptr}, // Empty button for spacing
-                    {"", nullptr}  // Empty button for spacing
-                };
-                footer.setButtons(appFooterButtons);
-                apps_text_lang_test::drawAppScreen();
-            }
+            footer.setButtons(appFooterButtons, 4);
+            apps_text_lang_test::drawAppScreen();
             break;
         case TEST2_APP_SCREEN: // Handle Test2 app screen
-            // Set footer buttons for test2 app screen
-            {
-                std::vector<FooterButton> appFooterButtons = {
-                    {"Home", homeAction},
-                    {"Off", showOffScreen},
-                    {"", nullptr}, // Empty button for spacing
-                    {"", nullptr}  // Empty button for spacing
-                };
-                footer.setButtons(appFooterButtons);
-                apps_test2::drawAppScreen();
-            }
+            footer.setButtons(appFooterButtons, 4);
+            apps_test2::drawAppScreen();
             break;
-        case SD_GATEWAY_SCREEN: {
-            std::vector<FooterButton> sdgwFooterButtons = {
-                {"Home", homeAction},
-                {"Off", showOffScreen},
-                {"Rfrsh", refreshUI},
-                {"Files", filesAction}
-            };
-            footer.setButtons(sdgwFooterButtons);
+        case SD_GATEWAY_SCREEN:
+            footer.setButtons(sdgwFooterButtons, 4);
             screens::drawSdGatewayScreen();
-            break;
-        }
-        default:
             break;
     }
 
-    // Draw buffered rows
+    // Draw all buffered rows
     drawRowsBuffered();
 
     // Draw footer
     footer.draw(footer.isVisible());
 
     M5.Display.endWrite();
-    if (!firstRenderDone) {
-        // Первое обновление - полное
-        M5.Display.display();
-        firstRenderDone = true;
-    } else {
-        // Частичное обновление региона контента (от строки 2 до футера)
-        RowPosition start = getRowPosition(2);
-        RowPosition footerPos = getRowPosition(15);
-        int regionY = start.y;
-        int regionHeight = footerPos.y - start.y;
-        M5.Display.display(start.x, regionY, start.width, regionHeight);
-    }
 }
 
 // Update UI by clearing old messages
 void updateUI() {
-    if (currentMessage.text != "" && (millis() - currentMessage.timestamp > 1000)) { // 1 second
-        clearMessage();
-        renderCurrentScreen();
-    }
+    // Clear message if it's too old
+    clearMessage();
+
+    // Update the display
+    M5.Display.endWrite();
+    M5.Display.display();
+
+    // Reset rendering flag after display update
+    extern bool isRendering;
+    isRendering = false;
 }
 
 // Display a message in header 2
@@ -239,10 +245,10 @@ void clearMessage() {
 }
 
 // Функция для переноса длинных строк текста
-std::vector<String> wordWrap(const String& text, int maxWidth) {
-    std::vector<String> lines;
+void wordWrap(const String& text, int maxWidth, String* lines, int& lineCount, int maxLines) {
+    lineCount = 0;
     if (text.length() == 0) {
-        return lines;
+        return;
     }
     
     // Устанавливаем шрифт для корректного расчета ширины текста
@@ -259,7 +265,10 @@ std::vector<String> wordWrap(const String& text, int maxWidth) {
             // Если текущая строка + слово + пробел шире максимальной ширины
             if (line.length() > 0 && 
                 M5.Display.textWidth((line + word + " ").c_str()) > maxWidth) {
-                lines.push_back(line);
+                if (lineCount < maxLines) {
+                    lines[lineCount] = line;
+                    lineCount++;
+                }
                 line = word + " ";
             } else {
                 line += word + " ";
@@ -269,7 +278,10 @@ std::vector<String> wordWrap(const String& text, int maxWidth) {
             // Если встретили перенос строки, завершаем текущую строку
             if (c == '\n') {
                 line.trim();
-                lines.push_back(line);
+                if (lineCount < maxLines) {
+                    lines[lineCount] = line;
+                    lineCount++;
+                }
                 line = "";
             }
         } else {
@@ -282,7 +294,10 @@ std::vector<String> wordWrap(const String& text, int maxWidth) {
         // Если текущая строка + последнее слово шире максимальной ширины
         if (line.length() > 0 && 
             M5.Display.textWidth((line + word).c_str()) > maxWidth) {
-            lines.push_back(line);
+            if (lineCount < maxLines) {
+                lines[lineCount] = line;
+                lineCount++;
+            }
             line = word;
         } else {
             line += word;
@@ -292,10 +307,11 @@ std::vector<String> wordWrap(const String& text, int maxWidth) {
     // Добавляем последнюю строку, если она не пустая
     if (line.length() > 0) {
         line.trim();
-        lines.push_back(line);
+        if (lineCount < maxLines) {
+            lines[lineCount] = line;
+            lineCount++;
+        }
     }
-    
-    return lines;
 }
 
 // Navigate to a specific path
@@ -305,13 +321,13 @@ void navigateTo(const String& path) {
     screens::resetPagination(); // Use namespace to call resetPagination
     
     // Setup footer buttons for files screen
-    std::vector<FooterButton> filesFooterButtons = {
+    FooterButton filesFooterButtons[] = {
         {"Home", homeAction},
         {"Off", showOffScreen},
         {"Rfrsh", refreshUI},
         {"Files", filesAction}
     };
-    footer.setButtons(filesFooterButtons);
+    footer.setButtons(filesFooterButtons, 4);
     
     renderCurrentScreen();
 }
@@ -330,13 +346,13 @@ void navigateUp() {
     screens::resetPagination(); // Use namespace to call resetPagination
     
     // Setup footer buttons for files screen
-    std::vector<FooterButton> filesFooterButtons = {
+    FooterButton filesFooterButtons[] = {
         {"Home", homeAction},
         {"Off", showOffScreen},
         {"Rfrsh", refreshUI},
         {"Files", filesAction}
     };
-    footer.setButtons(filesFooterButtons);
+    footer.setButtons(filesFooterButtons, 4);
     
     renderCurrentScreen();
 }

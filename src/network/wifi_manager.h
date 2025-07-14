@@ -2,7 +2,6 @@
 #define WIFI_MANAGER_H
 
 #include <WiFi.h>
-#include <vector>
 #include <String>
 #include <functional>
 
@@ -24,7 +23,9 @@ public:
     bool isScanning() const { return _isScanning; }
     bool isConnected() const { return WiFi.status() == WL_CONNECTED; }
     String getLocalIP() const { return WiFi.localIP().toString(); }
-    const std::vector<NetworkInfo>& getNetworks() const { return _networks; }
+    static const int MAX_NETWORKS = 8;
+    const NetworkInfo* getNetworks() const { return _networks; }
+    int getNetworksCount() const { return _networksCount; }
     int updateScanResults();
 
     void setOnNetworkListUpdated(std::function<void()> callback) {
@@ -37,7 +38,8 @@ private:
     WiFiManager& operator=(const WiFiManager&) = delete;
 
     bool _isScanning = false;
-    std::vector<NetworkInfo> _networks;
+    NetworkInfo _networks[MAX_NETWORKS];
+    int _networksCount = 0;
     std::function<void()> _onNetworkListUpdated;
 };
 

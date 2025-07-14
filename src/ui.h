@@ -7,7 +7,6 @@
 #include "sdcard.h"
 #include "button.h"
 #include "footer.h"
-#include <vector>
 #include <String>
 #include <WiFi.h> // Added
 
@@ -31,6 +30,7 @@
 const int EPD_WIDTH = 540;
 const int EPD_HEIGHT = 960;
 const float FONT_SIZE_ALL = 3;
+const int ROW_HEIGHT_ALL = 60;
 
 // Универсальный шрифт для всего проекта
 const lgfx::IFont* const UNIVERSAL_FONT = &fonts::efontCN_12;
@@ -77,16 +77,23 @@ enum ScreenType {
     SD_GATEWAY_SCREEN // Новый экран SD Gateway
 };
 
+// Constants for static arrays
+const int MAX_DISPLAYED_FILES = 50;
+const int MAX_ROWS_BUFFER = 25; // Увеличено для предотвращения переполнения буфера
+
 // Declare global variables
 extern Message currentMessage;
 extern ScreenType currentScreen;
 extern String currentPath;
-extern std::vector<String> displayedFiles;
-extern std::vector<BufferedRow> rowsBuffer;
+extern String displayedFiles[MAX_DISPLAYED_FILES];
+extern int displayedFilesCount;
+extern BufferedRow rowsBuffer[MAX_ROWS_BUFFER];
+extern int rowsBufferCount;
 extern Footer footer;
 
 // Declare functions
 RowPosition getRowPosition(int row);
+int getRowFromY(int y);
 void drawRow(const String& text, int row, uint16_t textColor, uint16_t bgColor, int fontSize, bool underline = false); // Updated signature
 void setupUI();
 void updateUI();
@@ -94,12 +101,13 @@ void displayMessage(const String& msg);
 void clearMessage();
 
 // Функция для переноса длинных строк текста
-std::vector<String> wordWrap(const String& text, int maxWidth);
+void wordWrap(const String& text, int maxWidth, String* lines, int& lineCount, int maxLines);
 
 // Added declarations
 void bufferRow(const String& text, int row, uint16_t textColor = TFT_BLACK, uint16_t bgColor = TFT_WHITE, int fontSize = FONT_SIZE_ALL, bool underline = false); // Updated signature
 void drawRowsBuffered();
 void renderCurrentScreen();
+void clearAllBuffers(); // Force clear all memory buffers
 
 // Функция для установки универсального шрифта
 void setUniversalFont();

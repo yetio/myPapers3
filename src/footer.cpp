@@ -4,11 +4,14 @@
 #include <algorithm> // For std::max and std::min
 
 // Initialize footer
-Footer::Footer() : visible(true) {}
+Footer::Footer() : buttonCount(0), visible(true) {}
 
 // Set footer buttons
-void Footer::setButtons(const std::vector<FooterButton>& newButtons) {
-    buttons = newButtons;
+void Footer::setButtons(const FooterButton* newButtons, int count) {
+    buttonCount = (count > MAX_FOOTER_BUTTONS) ? MAX_FOOTER_BUTTONS : count;
+    for (int i = 0; i < buttonCount; i++) {
+        buttons[i] = newButtons[i];
+    }
 }
 
 // Draw footer
@@ -19,7 +22,6 @@ void Footer::draw(bool visible) {
     RowPosition pos = getRowPosition(15); // Footer on row 15
     int padding = 10;
     int availableWidth = pos.width - 2 * padding;
-    int buttonCount = buttons.size();
     if (buttonCount == 0) return;
     int buttonSpacing = 30; // 5 spaces * ~6 pixels each
     int totalSpacing = buttonSpacing * (buttonCount - 1);
@@ -32,7 +34,8 @@ void Footer::draw(bool visible) {
     // Устанавливаем универсальный шрифт для футера
     ::setUniversalFont();
 
-    for (const auto& button : buttons) {
+    for (int i = 0; i < buttonCount; i++) {
+        const FooterButton& button = buttons[i];
         // Draw button label
         M5.Display.setCursor(currentX, textY);
         M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
@@ -59,7 +62,7 @@ bool Footer::isVisible() const {
 
 // Invoke button action by index
 void Footer::invokeButtonAction(int index) {
-    if (index >= 0 && index < buttons.size()) {
+    if (index >= 0 && index < buttonCount && buttons[index].action) {
         buttons[index].action();
     }
 }

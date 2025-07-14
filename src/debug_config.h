@@ -5,7 +5,8 @@
 // Раскомментируйте нужные строки для включения отладочных сообщений
 
 // Отладка касаний и кнопок
-// #define DEBUG_TOUCH
+#define DEBUG_TOUCH
+#define DEBUG_WIFI_TOUCH
 
 // Отладка клавиатуры
 // #define DEBUG_KEYBOARD

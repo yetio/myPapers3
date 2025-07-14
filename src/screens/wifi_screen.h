@@ -2,15 +2,16 @@
 #define WIFI_SCREEN_H
 
 #include <M5Unified.h>
+#include <functional>
 #include <vector>
-#include <String>
-#include <WiFi.h>
+#include "../network/wifi_manager.h"
 
 namespace screens {
+
     void drawWifiScreen();
-    void handleWiFiSelection(int row);
-    void handleKeyboardInput(String key); // Изменено с char key на String key
-    extern bool isPasswordInputActive;
+    void handleWiFiScreenTouch(int x, int y);
+    void resetWiFiScreen();
+
 }
 
 #endif // WIFI_SCREEN_H

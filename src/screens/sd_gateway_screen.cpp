@@ -10,7 +10,7 @@ namespace screens {
         RowPosition footerStart = getRowPosition(15);
         M5.Display.fillRect(contentStart.x, contentStart.y, contentStart.width, footerStart.y - contentStart.y, TFT_WHITE);
 
-        String status = sd_gateway::isActive() ? "On" : "Off";
+        String status = sd_gateway::isActive() ? "On port :8080" : "Off";
         ::bufferRow("SD Gateway status: " + status, 3, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
         if (sd_gateway::isActive()) {
             ::bufferRow("Веб-интерфейс: http://" + WiFi.localIP().toString() + ":" + String(sd_gateway::getPort()), 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);

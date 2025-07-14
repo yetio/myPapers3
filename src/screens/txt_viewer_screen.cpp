@@ -21,13 +21,13 @@ namespace screens {
         displayTxtFile(filename);
 
         // Setup footer buttons for viewer screens
-        std::vector<FooterButton> viewerFooterButtons = {
+        FooterButton viewerFooterButtons[] = {
             {"Home", homeAction},
             {"Off", showOffScreen},
             {"Freeze", freezeAction},
             {"Files", filesAction}
         };
-        footer.setButtons(viewerFooterButtons);
+        footer.setButtons(viewerFooterButtons, 4);
 
         // Render all buffered rows
         ::drawRowsBuffered();
@@ -55,10 +55,14 @@ namespace screens {
                 int maxWidth = pos.width - 20; // 10px с каждой стороны
                 
                 // Разбиваем длинную строку на несколько строк с учетом переноса слов
-                std::vector<String> wrappedLines = ::wordWrap(line, maxWidth);
+                const int MAX_WRAPPED_LINES = 10;
+                String wrappedLines[MAX_WRAPPED_LINES];
+                int wrappedLineCount = 0;
+                ::wordWrap(line, maxWidth, wrappedLines, wrappedLineCount, MAX_WRAPPED_LINES);
                 
                 // Отображаем каждую строку
-                for (const auto& wrappedLine : wrappedLines) {
+                for (int i = 0; i < wrappedLineCount; i++) {
+                    const String& wrappedLine = wrappedLines[i];
                     if (row <= maxRowsAvailable) {
                         ::bufferRow(wrappedLine, row);
                         row++;
@@ -101,10 +105,14 @@ namespace screens {
                 int maxWidth = pos.width - 20; // 10px с каждой стороны
                 
                 // Разбиваем длинную строку на несколько строк с учетом переноса слов
-                std::vector<String> wrappedLines = ::wordWrap(line, maxWidth);
+                const int MAX_WRAPPED_LINES = 10;
+                String wrappedLines[MAX_WRAPPED_LINES];
+                int wrappedLineCount = 0;
+                ::wordWrap(line, maxWidth, wrappedLines, wrappedLineCount, MAX_WRAPPED_LINES);
                 
                 // Отображаем каждую строку
-                for (const auto& wrappedLine : wrappedLines) {
+                for (int i = 0; i < wrappedLineCount; i++) {
+                    const String& wrappedLine = wrappedLines[i];
                     if (row <= maxRowsAvailable) {
                         ::bufferRow(wrappedLine, row);
                         row++;

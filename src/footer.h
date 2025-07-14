@@ -4,11 +4,13 @@
 
 #include <M5Unified.h>
 #include <String>
-#include <vector>
 #include <functional>
 
 // Forward declaration to avoid cyclic dependency
 struct RowPosition;
+
+// Constants for footer
+const int MAX_FOOTER_BUTTONS = 4;
 
 // Structure for footer buttons
 struct FooterButton {
@@ -20,15 +22,17 @@ struct FooterButton {
 class Footer {
 public:
     Footer();
-    void setButtons(const std::vector<FooterButton>& buttons);
+    void setButtons(const FooterButton* buttons, int count);
     void draw(bool visible);
     void setVisible(bool visible);
     bool isVisible() const;
     void invokeButtonAction(int index);
-    const std::vector<FooterButton>& getButtons() const { return buttons; }
+    const FooterButton* getButtons() const { return buttons; }
+    int getButtonCount() const { return buttonCount; }
 
 private:
-    std::vector<FooterButton> buttons;
+    FooterButton buttons[MAX_FOOTER_BUTTONS];
+    int buttonCount;
     bool visible;
 };
 

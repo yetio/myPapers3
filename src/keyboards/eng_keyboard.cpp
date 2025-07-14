@@ -6,7 +6,7 @@ namespace keyboards {
     KeyboardState currentKeyboardState = LOWERCASE; // Start with lowercase
 
     // Function to get the current keyboard layout based on state
-    const std::vector<std::vector<String>>& getCurrentLayout() {
+    const String (*getCurrentLayout())[KEYBOARD_COLS] {
         switch (currentKeyboardState) {
             case UPPERCASE:
                 return ENG_KEYBOARD_LAYOUT_UPPER;
@@ -19,33 +19,50 @@ namespace keyboards {
     }
 
     void drawEngKeyboard() {
-        // Определение размеров клавиатуры
-        const int keyWidth = EPD_WIDTH / 11; // 11 кнопок в строке для размещения backspace
-        const int keyHeight = 60; // Фиксированная высота для каждой кнопки
-        const int startY = EPD_HEIGHT - (4 * keyHeight) - 60; // Позиция выше футера (строка 15)
+        const int keyWidth = EPD_WIDTH / KEYBOARD_COLS;
+        const int keyHeight = 60;
+        const int startY = EPD_HEIGHT - (KEYBOARD_ROWS * keyHeight) - 60;
 
-        // Очистка области клавиатуры
-        M5.Display.fillRect(0, startY, EPD_WIDTH, 4 * keyHeight, TFT_WHITE);
+        M5.Display.fillRect(0, startY, EPD_WIDTH, KEYBOARD_ROWS * keyHeight, TFT_WHITE);
 
-        // Отрисовка каждой кнопки
-        for (size_t row = 0; row < ENG_KEYBOARD_LAYOUT.size(); ++row) {
-            for (size_t col = 0; col < ENG_KEYBOARD_LAYOUT[row].size(); ++col) {
+        const String (*currentLayout)[KEYBOARD_COLS] = getCurrentLayout();
+        for (int row = 0; row < KEYBOARD_ROWS; ++row) {
+            for (int col = 0; col < KEYBOARD_COLS; ++col) {
                 int x = col * keyWidth;
                 int y = startY + row * keyHeight;
 
-                // No background highlight for any keys
-
-                // Отрисовка текста кнопки
-                const std::vector<std::vector<String>>& currentLayout = getCurrentLayout(); // Get current layout
                 M5.Display.setCursor(x + (keyWidth - M5.Display.textWidth(currentLayout[row][col].c_str())) / 2,
                                    y + (keyHeight - M5.Display.fontHeight()) / 2);
                 M5.Display.setTextColor(TFT_BLACK);
                 M5.Display.setTextSize(2);
-                M5.Display.print(currentLayout[row][col]); // Use currentLayout for printing
+                M5.Display.print(currentLayout[row][col]);
             }
         }
+    }
 
-        // Обновление дисплея
-        M5.Display.display();
+    void toggleKeyboardState() {
+        if (currentKeyboardState == LOWERCASE) {
+            currentKeyboardState = UPPERCASE;
+        } else if (currentKeyboardState == UPPERCASE) {
+            currentKeyboardState = SYMBOLS;
+        } else {
+            currentKeyboardState = LOWERCASE;
+        }
+    }
+
+    String getKeyFromTouch(int x, int y) {
+        const int keyWidth = EPD_WIDTH / KEYBOARD_COLS;
+        const int keyHeight = 60;
+        const int startY = EPD_HEIGHT - (KEYBOARD_ROWS * keyHeight) - 60;
+
+        if (y < startY) return "";
+
+        int row = (y - startY) / keyHeight;
+        int col = x / keyWidth;
+
+        if (row >= 0 && row < KEYBOARD_ROWS && col >= 0 && col < KEYBOARD_COLS) {
+            return getCurrentLayout()[row][col];
+        }
+        return "";
     }
 }

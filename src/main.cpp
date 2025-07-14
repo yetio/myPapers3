@@ -13,9 +13,13 @@
 #include "screens/apps_screen.h" // Include Apps screen header
 #include "keyboards/eng_keyboard.h" // Include English keyboard header
 #include "sd_gateway.h"
+#include "network/wifi_manager.h" // Include WiFi manager
 #include "apps/text_lang_test/app_screen.h" // Include Text Language Test app header
 
 bool isRendering = false;
+bool ui_needs_update = true; // Флаг для управления обновлением UI
+unsigned long lastTouchTime = 0;
+const unsigned long TOUCH_DEBOUNCE_DELAY = 300; // Задержка дебаунсинга в миллисекундах
 
 // Custom clamp function if std::clamp is unavailable
 template <typename T>
@@ -63,64 +67,68 @@ void setup() {
 
 void loop() {
     M5.update();
-    updateUI();
+    if (ui_needs_update) {
+        updateUI();
+        ui_needs_update = false; // Сбрасываем флаг после обновления
+    }
     sd_gateway::loop();
+    
+    // Проверяем завершение сканирования Wi-Fi
+    WiFiManager::getInstance().updateScanResults();
 
     if (isRendering) {
         // Block actions during rendering
         return;
     }
 
-    // Check for touch input
-    if (M5.Display.touch()) {
+    // Check for touch input with debouncing
+    if (M5.Display.touch() && !isRendering && (millis() - lastTouchTime > TOUCH_DEBOUNCE_DELAY)) {
         lgfx::touch_point_t tp;
         if (M5.Display.getTouchRaw(&tp, 1)) {
             M5.Display.convertRawXY(&tp, 1);
             int16_t x = tp.x;
             int16_t y = tp.y;
-            #ifdef DEBUG_TOUCH
-            Serial.print("Touch detected at x: ");
-            Serial.print(x);
-            Serial.print(", y: ");
-            Serial.println(y);
-            #endif
+            
+            // Обновляем время последнего касания
+            lastTouchTime = millis();
+            isRendering = true;
+            ui_needs_update = true; // Устанавливаем флаг для обновления UI
+            
+            // #ifdef DEBUG_TOUCH
+            // Serial.print("Touch detected at x: ");
+            // Serial.print(x);
+            // Serial.print(", y: ");
+            // Serial.println(y);
+            // #endif
 
             // Handle footer touch
-            if (footer.isVisible() && y >= (15 * 60)) { // Footer on row 15
+            if (footer.isVisible() && y >= (EPD_HEIGHT - 60)) { // Footer on row 15
                 // Calculate which button was pressed based on x position
-                int buttonCount = footer.getButtons().size();
+                int buttonCount = footer.getButtonCount();
                 if (buttonCount == 0) return; // No buttons to handle
 
                 int buttonWidth = EPD_WIDTH / buttonCount; // Dynamic based on button count
                 int buttonIndex = x / buttonWidth;
                 buttonIndex = customClamp(buttonIndex, 0, buttonCount - 1);
 
-                if (buttonIndex < footer.getButtons().size()) {
+                if (buttonIndex < footer.getButtonCount()) {
                     #ifdef DEBUG_TOUCH
                     Serial.println(footer.getButtons()[buttonIndex].label + " button pressed");
                     #endif
-                    isRendering = true;
-                    // Handle specific footer button actions based on screen
-                    if (currentScreen == WIFI_SCREEN && footer.getButtons()[buttonIndex].label == "Rfrsh") {
-                        displayMessage("Scanning for networks...");
-                        screens::startWiFiScan();
-                        renderCurrentScreen(); // Re-render to show scanning status
-                    } else {
-                        footer.invokeButtonAction(buttonIndex);
-                    }
-                    isRendering = false;
+                    footer.invokeButtonAction(buttonIndex);
                 }
             } else {
                 // Handle file selection if on FILES_SCREEN
                 if (currentScreen == FILES_SCREEN) {
-                    int touchedRow = y / 60;
+                    int touchedRow = getRowFromY(y);
                     screens::handleTouch(touchedRow, x, y);
                 }
                 // Handle Wi-Fi row touch on MAIN_SCREEN
                 else if (currentScreen == MAIN_SCREEN) {
-                    int touchedRow = y / 60;
+                    int touchedRow = getRowFromY(y);
                     if (touchedRow == 5) { // Wi-Fi row is row 5
                         displayMessage("Wi-Fi pressed");
+                        screens::resetWiFiScreen(); // Сбрасываем состояние при входе на Wi-Fi экран
                         currentScreen = WIFI_SCREEN;
                         renderCurrentScreen();
                     } else if (touchedRow == 6) { // SD Gateway row is row 6
@@ -138,29 +146,18 @@ void loop() {
                 }
                 // Handle Wi-Fi screen touch
                 else if (currentScreen == WIFI_SCREEN) {
-                    if (screens::isPasswordInputActive) {
-                        // Handle keyboard input
-                        int keyRow = (y - (EPD_HEIGHT - (4 * 60) - 60)) / 60; // Adjust based on keyboard layout
-                        int keyCol = x / (EPD_WIDTH / 11); // Changed from 10 to 11
-                        if (keyRow >= 0 && keyRow < 4 && keyCol >= 0 && keyCol < 11) { // Changed boundary for keyCol
-                            const std::vector<std::vector<String>>& currentLayout = keyboards::getCurrentLayout(); // Get current layout
-                            String key = currentLayout[keyRow][keyCol]; // Use currentLayout for getting key
-                            screens::handleKeyboardInput(key.c_str()); // Передача C-строки
-                        }
-                    } else {
-                        // Handle Wi-Fi selection
-                        int touchedRow = y / 60;
-                        screens::handleWiFiSelection(touchedRow);
-                    }
+                    screens::handleWiFiScreenTouch(x, y);
                 }
                 // Handle Apps screen touch
                 else if (currentScreen == APPS_SCREEN) {
-                    int touchedRow = y / 60;
+                    int touchedRow = getRowFromY(y);
                     if (touchedRow >= 3) { // App names start from row 3
                          screens::handleAppsSelection(touchedRow);
                     }
                 }
             }
+            
+
         }
         // Убрано постоянное сообщение "No touch data available" для предотвращения спама в консоли
     }

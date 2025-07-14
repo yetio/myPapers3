@@ -6,13 +6,11 @@
 #include <esp_sleep.h>
 
 void freezeAction() {
-    displayMessage("Freeze");
-    
-    // Clear the screen
+    // Очищаем экран
     M5.Display.fillScreen(TFT_WHITE);
     M5.Display.display();
 
-    // Get the currently opened file and display it full screen
+    // Получаем текущий открытый файл и отображаем его на полный экран
     if (currentScreen == TXT_VIEWER_SCREEN) {
         String currentFile = screens::getCurrentTxtFile();
         screens::displayFullScreenFile(currentFile);
@@ -22,10 +20,10 @@ void freezeAction() {
         screens::displayFullScreenImgFile(currentFile);
     }
 
-    // Ensure the display is updated before powering off
+    // Убеждаемся, что дисплей обновлен перед выключением
     M5.Display.display();
 
-    // Shutdown the device to save power
+    // Выключаем устройство для экономии энергии
     M5.Power.powerOff();
     // Фоллбэк глубокий сон, если питание не отключилось при USB
     esp_deep_sleep_start();

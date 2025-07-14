@@ -1,15 +1,18 @@
 // ./buttons/rfrsh.cpp
 #include "rfrsh.h"
 #include "../ui.h"
+#include "../network/wifi_manager.h"
+
+extern Message currentMessage;
 
 void refreshUI() {
-    // Only refresh if current screen is not viewer screens
-    if (currentScreen != TXT_VIEWER_SCREEN && currentScreen != IMG_VIEWER_SCREEN) {
-        displayMessage("Refresh pressed");
-        // No delay
+    displayMessage("Refresh pressed");
 
-        // Simply set the current screen to trigger re-render
-        renderCurrentScreen();
-        clearMessage();
+    if (currentScreen == WIFI_SCREEN) {
+        WiFiManager::getInstance().startScan();
+    } else if (currentScreen != TXT_VIEWER_SCREEN && currentScreen != IMG_VIEWER_SCREEN) {
+        currentMessage.text = "";
     }
+
+    renderCurrentScreen();
 }

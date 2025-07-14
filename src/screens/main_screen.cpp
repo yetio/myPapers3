@@ -22,7 +22,7 @@ namespace screens {
 
         // SD Gateway row (row 6, кликабельная)
         // Обработка нажатия реализована в main.cpp через sd_gateway::toggleOrShow()
-        String sdgwState = sd_gateway::isActive() ? "On" : "Off";
+        String sdgwState = sd_gateway::isActive() ? "On port :8080" : "Off";
         ::bufferRow("SD Gateway: " + sdgwState, 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
 
         // TODO: локализация строк SD Gateway и Apps

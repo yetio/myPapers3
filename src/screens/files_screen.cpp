@@ -6,7 +6,7 @@
 
 // Variables for pagination
 static int currentPage = 0;
-static const int itemsPerPage = 9; // Increased from 8 to 9 rows for files
+static const int itemsPerPage = 9; // Используем строки 5-13 для файлов (9 строк)
 static int totalPages = 1; // Initialize total pages
 
 namespace screens {
@@ -39,20 +39,23 @@ namespace screens {
         // Do not reset pagination here
         // resetPagination(); // Removed to allow pagination to work
 
-        displayedFiles.clear();
+        displayedFilesCount = 0;
+        for (int i = 0; i < MAX_DISPLAYED_FILES; i++) {
+            displayedFiles[i] = "";
+        }
         bufferRow("Files Manager", 2, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         String lastFolder = getLastFolder(currentPath);
         bufferRow("Path: " + lastFolder, 3, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
 
         // Add "..." for navigation if not root, otherwise a blank row
         if (currentPath != "/") {
-            bufferRow("...", 4, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
+            bufferRow("...", 4, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true); // Underline enabled to show it's clickable
         } else {
             bufferRow("", 4, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         }
 
         // Clear remaining rows
-        for (int row = 5; row <= 13; ++row) { // Use rows 5-13 for items
+        for (int row = 5; row <= 13; ++row) { // Use rows 5-13 for items (9 rows)
             bufferRow("", row, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         }
 
@@ -68,8 +71,11 @@ namespace screens {
             return;
         }
 
-        std::vector<String> folders, files;
-        const size_t maxFilesPerBatch = 50; // Process files in batches to avoid memory issues
+        static String folders[MAX_DISPLAYED_FILES];
+        static String files[MAX_DISPLAYED_FILES];
+        int foldersCount = 0;
+        int filesCount = 0;
+        const size_t maxFilesPerBatch = 100; // Process more files per batch for better performance
         size_t processedFiles = 0;
 
         while (true) {
@@ -90,41 +96,52 @@ namespace screens {
             }
 
             if (file.isDirectory()) {
-                folders.push_back(filename + "/");
+                if (foldersCount < MAX_DISPLAYED_FILES) {
+                    folders[foldersCount++] = filename + "/";
+                }
             } else {
-                files.push_back(filename);
+                if (filesCount < MAX_DISPLAYED_FILES) {
+                    files[filesCount++] = filename;
+                }
             }
             file.close();
             processedFiles++;
         }
         root.close();
 
-        // Sort in smaller chunks if the lists are large
-        if (!folders.empty()) {
-            const size_t sortChunkSize = 100;
-            for (size_t i = 0; i < folders.size(); i += sortChunkSize) {
-                size_t chunkEnd = std::min(i + sortChunkSize, folders.size());
-                std::sort(folders.begin() + i, folders.begin() + chunkEnd);
+        // Simple bubble sort for small arrays
+        for (int i = 0; i < foldersCount - 1; i++) {
+            for (int j = 0; j < foldersCount - i - 1; j++) {
+                if (folders[j] > folders[j + 1]) {
+                    String temp = folders[j];
+                    folders[j] = folders[j + 1];
+                    folders[j + 1] = temp;
+                }
             }
-            std::inplace_merge(folders.begin(), folders.begin() + (folders.size() / 2), folders.end());
         }
 
-        if (!files.empty()) {
-            const size_t sortChunkSize = 100;
-            for (size_t i = 0; i < files.size(); i += sortChunkSize) {
-                size_t chunkEnd = std::min(i + sortChunkSize, files.size());
-                std::sort(files.begin() + i, files.begin() + chunkEnd);
+        for (int i = 0; i < filesCount - 1; i++) {
+            for (int j = 0; j < filesCount - i - 1; j++) {
+                if (files[j] > files[j + 1]) {
+                    String temp = files[j];
+                    files[j] = files[j + 1];
+                    files[j + 1] = temp;
+                }
             }
-            std::inplace_merge(files.begin(), files.begin() + (files.size() / 2), files.end());
         }
 
-        displayedFiles.clear();
-        displayedFiles.reserve(folders.size() + files.size()); // Pre-allocate memory
-        displayedFiles.insert(displayedFiles.end(), folders.begin(), folders.end());
-        displayedFiles.insert(displayedFiles.end(), files.begin(), files.end());
+        displayedFilesCount = 0;
+        // Copy folders first
+        for (int i = 0; i < foldersCount && displayedFilesCount < MAX_DISPLAYED_FILES; i++) {
+            displayedFiles[displayedFilesCount++] = folders[i];
+        }
+        // Copy files
+        for (int i = 0; i < filesCount && displayedFilesCount < MAX_DISPLAYED_FILES; i++) {
+            displayedFiles[displayedFilesCount++] = files[i];
+        }
 
         // Calculate total pages
-        totalPages = (displayedFiles.size() + itemsPerPage - 1) / itemsPerPage;
+        totalPages = (displayedFilesCount + itemsPerPage - 1) / itemsPerPage;
 
         // Ensure currentPage is within bounds
         if (currentPage >= totalPages) {
@@ -136,7 +153,7 @@ namespace screens {
 
         // Display files and folders for the current page
         int startIdx = currentPage * itemsPerPage;
-        int endIdx = std::min(startIdx + itemsPerPage, (int)displayedFiles.size());
+        int endIdx = std::min(startIdx + itemsPerPage, displayedFilesCount);
         for (int i = startIdx; i < endIdx; ++i) {
             bool isFolder = displayedFiles[i].endsWith("/");
             bufferRow(displayedFiles[i], 5 + (i - startIdx), TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true); // Underline enabled
@@ -145,21 +162,23 @@ namespace screens {
         // Add pagination controls with <<<--   <--   [currentPage + 1]   -->   -->>>
         if (totalPages > 1) {
             // Define pagination buttons
-            String paginationButtons[] = {"<<<--", "<--", String(currentPage + 1), "-->", "-->>>"};
+            String paginationButtons[] = {"<<<--", "<--", String(currentPage + 1), "-->", "-->>>"};  
             int numButtons = 5; // Now 5 buttons including the page number
             int sectionWidth = EPD_WIDTH / numButtons;
-            RowPosition pos = getRowPosition(14);
+            RowPosition pos = getRowPosition(14); // Move above footer (row 14)
             int underlineY = pos.y + 30;
 
             for(int i = 0; i < numButtons; ++i){
                 String btn = paginationButtons[i];
                 int btnX = pos.x + i * sectionWidth + 10; // 10px padding
-                int btnY = pos.y + 10;
+                // Center text vertically in the row
+                int btnY = pos.y + (pos.height - 20) / 2; // Center vertically (20 is approximate text height)
                 M5.Display.setCursor(btnX, btnY);
                 M5.Display.print(btn);
                 // Draw underline for each button
                 int textWidth = M5.Display.textWidth(btn.c_str());
-                M5.Display.drawLine(btnX, underlineY, btnX + textWidth, underlineY, TFT_BLACK);
+                int centeredUnderlineY = pos.y + pos.height - 10; // Position underline near bottom of row
+                M5.Display.drawLine(btnX, centeredUnderlineY, btnX + textWidth, centeredUnderlineY, TFT_BLACK);
             }
         }
     }
@@ -230,15 +249,15 @@ namespace screens {
 
     void handleTouch(int touchRow, int touchX, int touchY) {
         if (currentScreen == FILES_SCREEN) {
-            if (touchRow >= 5 && touchRow <= 13) { // Handle rows 5-13
+            if (touchRow >= 5 && touchRow <= 13) { // Handle rows 5-13 (9 rows)
                 int index = currentPage * itemsPerPage + (touchRow - 5);
-                if (index < displayedFiles.size()) {
+                if (index < displayedFilesCount) {
                     String selected = displayedFiles[index];
                     selectFile(selected);
                 }
             } else if (touchRow == 4) { // Handle "..."
                 selectFile("...");
-            } else if (touchRow == 14) { // Handle pagination on row 14
+            } else if (touchRow == 14) { // Handle pagination on row 14 (above footer)
                 int width = EPD_WIDTH;
 
                 // Define pagination button sizes and positions with 50% increased touch area

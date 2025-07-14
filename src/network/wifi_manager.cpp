@@ -19,7 +19,9 @@ bool WiFiManager::connect(const String& ssid, const String& password) {
 }
 
 bool WiFiManager::disconnect() {
-    WiFi.disconnect();
+    if (WiFi.status() == WL_CONNECTED) {
+        return WiFi.disconnect(true);
+    }
     return true;
 }
 
@@ -27,7 +29,8 @@ bool WiFiManager::startScan() {
     if (_isScanning) return false;
 
     WiFi.mode(WIFI_STA);
-    WiFi.disconnect(false);
+    WiFi.disconnect(true);
+    delay(100); // Даем время на отключение
 
     int result = WiFi.scanNetworks(true, true);
     if (result == WIFI_SCAN_FAILED) {
@@ -47,11 +50,13 @@ int WiFiManager::updateScanResults() {
 
     int result = WiFi.scanComplete();
     if (result >= 0) {
-        _networks.clear();
+        _networksCount = 0;
 
-        for (int i = 0; i < result; ++i) {
+        for (int i = 0; i < result && _networksCount < MAX_NETWORKS; ++i) {
             if (WiFi.SSID(i).length() > 0) {
-                _networks.push_back({WiFi.SSID(i), WiFi.RSSI(i)});
+                _networks[_networksCount].ssid = WiFi.SSID(i);
+                _networks[_networksCount].rssi = WiFi.RSSI(i);
+                _networksCount++;
             }
         }
 
@@ -62,7 +67,7 @@ int WiFiManager::updateScanResults() {
             _onNetworkListUpdated();
         }
 
-        return _networks.size();
+        return _networksCount;
     }
 
     return -1;

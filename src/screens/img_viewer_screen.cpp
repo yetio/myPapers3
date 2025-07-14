@@ -217,13 +217,13 @@ namespace screens {
         displayImgFile(filename);
 
         // Setup footer buttons for viewer screens
-        std::vector<FooterButton> viewerFooterButtons = {
+        FooterButton viewerFooterButtons[] = {
             {"Home", homeAction},
             {"Off", showOffScreen},
             {"Freeze", freezeAction},
             {"Files", filesAction}
         };
-        footer.setButtons(viewerFooterButtons);
+        footer.setButtons(viewerFooterButtons, 4);
 
         // Render all buffered rows
         ::drawRowsBuffered();
@@ -584,12 +584,12 @@ namespace screens {
 
     void setupImgViewerButtons() {
         // Настройка кнопок для просмотра изображений
-        std::vector<FooterButton> viewerFooterButtons = {
+        FooterButton viewerFooterButtons[] = {
             {"Home", homeAction},
             {"Off", showOffScreen},
             {"Freeze", freezeAction},
             {"Files", filesAction}
         };
-        footer.setButtons(viewerFooterButtons);
+        footer.setButtons(viewerFooterButtons, 4);
     }
 }

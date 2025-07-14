@@ -1,6 +1,5 @@
 #include "apps_screen.h"
 #include "../ui.h"
-#include <vector>
 #include <String>
 
 // Include app headers
@@ -10,7 +9,8 @@
 namespace screens {
 
     // Static list of applications
-    const std::vector<String> installedApps = {"text_lang_test", "test2"}; // Hardcoded list based on src/apps
+    const String installedApps[] = {"text_lang_test", "test2"}; // Hardcoded list based on src/apps
+    const int installedAppsCount = 2;
 
     void drawAppsScreen() {
         ::updateHeader(); // Update header for this screen
@@ -21,11 +21,11 @@ namespace screens {
         M5.Display.fillRect(contentStart.x, contentStart.y, contentStart.width, footerStart.y - contentStart.y, TFT_WHITE);
 
         // Use the static list of apps
-        if (installedApps.empty()) {
+        if (installedAppsCount == 0) {
             ::bufferRow("No applications found.", 2, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         } else {
             ::bufferRow("Applications:", 2, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
-            for (size_t i = 0; i < installedApps.size(); ++i) {
+            for (int i = 0; i < installedAppsCount; ++i) {
                 // Display each app name from the static list, starting from row 3
                 ::bufferRow(installedApps[i], i + 3, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true); // Make app names clickable
             }
@@ -35,7 +35,7 @@ namespace screens {
 
     void handleAppsSelection(int selectedRow) {
          // Use the static list of apps
-         if (selectedRow - 3 >= 0 && selectedRow - 3 < installedApps.size()) {
+         if (selectedRow - 3 >= 0 && selectedRow - 3 < installedAppsCount) {
             String selectedApp = installedApps[selectedRow - 3];
             
             // Check which app was selected and call its drawing function
@@ -57,4 +57,4 @@ namespace screens {
             }
          }
     }
-} 
+}
