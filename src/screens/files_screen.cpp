@@ -90,7 +90,7 @@ namespace screens {
             }
 
             String filename = file.name();
-            if (filename.startsWith(".")) {
+            if (filename.startsWith(".") || filename == "settings.json") {
                 file.close();
                 continue; // Skip hidden/system files
             }
@@ -230,11 +230,8 @@ namespace screens {
                 currentScreen = TXT_VIEWER_SCREEN;
                 renderCurrentScreen();
             }
-            // Поддержка различных форматов изображений (без GIF)
-            else if (filename.endsWith(".bmp") || 
-                     filename.endsWith(".jpg") || 
-                     filename.endsWith(".jpeg") || 
-                     filename.endsWith(".png")) {
+            // Поддержка только BMP формата изображений
+            else if (filename.endsWith(".bmp")) {
                 navigateTo(currentPath + filename);
                 currentScreen = IMG_VIEWER_SCREEN;
                 renderCurrentScreen();

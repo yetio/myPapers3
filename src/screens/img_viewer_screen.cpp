@@ -6,9 +6,7 @@
 // Перечисление для поддерживаемых форматов изображений
 enum ImageFormat {
     FORMAT_UNKNOWN,
-    FORMAT_BMP,
-    FORMAT_JPG,
-    FORMAT_PNG
+    FORMAT_BMP
 };
 
 
@@ -19,179 +17,11 @@ ImageFormat getImageFormat(const String& filename) {
     ext.toLowerCase();
     
     if (ext == "bmp") return FORMAT_BMP;
-    if (ext == "jpg" || ext == "jpeg") return FORMAT_JPG;
-    if (ext == "png") return FORMAT_PNG;
     
     return FORMAT_UNKNOWN;
 }
 
-// Функция для получения размеров JPG изображения из заголовка файла
-bool getJpgDimensions(const String& filename, int& width, int& height) {
-    File file = SD.open(filename, FILE_READ);
-    if (!file) {
-        return false;
-    }
-    
-    // JPEG файлы начинаются с маркера SOI (Start of Image) - 0xFFD8
-    uint8_t marker[2];
-    if (file.read(marker, 2) != 2 || marker[0] != 0xFF || marker[1] != 0xD8) {
-        file.close();
-        return false;
-    }
-    
-    // Ищем маркер SOF (Start of Frame), который содержит размеры
-    // SOF маркеры: 0xFFC0-0xFFC3, 0xFFC5-0xFFC7, 0xFFC9-0xFFCB, 0xFFCD-0xFFCF
-    while (!file.available()) {
-        if (file.read(marker, 2) != 2 || marker[0] != 0xFF) {
-            file.close();
-            return false;
-        }
-        
-        // Проверяем, является ли маркер одним из SOF маркеров
-        if ((marker[1] >= 0xC0 && marker[1] <= 0xC3) || 
-            (marker[1] >= 0xC5 && marker[1] <= 0xC7) || 
-            (marker[1] >= 0xC9 && marker[1] <= 0xCB) || 
-            (marker[1] >= 0xCD && marker[1] <= 0xCF)) {
-            
-            // Пропускаем длину сегмента (2 байта)
-            file.read(marker, 2);
-            
-            // Пропускаем точность (1 байт)
-            file.read();
-            
-            // Читаем высоту и ширину (по 2 байта каждый, в формате big-endian)
-            uint8_t dimensions[4];
-            if (file.read(dimensions, 4) != 4) {
-                file.close();
-                return false;
-            }
-            
-            // Высота и ширина в JPEG хранятся в формате big-endian
-            height = (dimensions[0] << 8) | dimensions[1];
-            width = (dimensions[2] << 8) | dimensions[3];
-            
-            file.close();
-            return true;
-        }
-        
-        // Если это не SOF маркер, пропускаем сегмент
-        uint16_t segmentLength;
-        if (file.read((uint8_t*)&segmentLength, 2) != 2) {
-            file.close();
-            return false;
-        }
-        
-        // Преобразуем из big-endian и вычитаем 2 (длина уже включает эти 2 байта)
-        segmentLength = ((segmentLength & 0xFF) << 8) | ((segmentLength >> 8) & 0xFF);
-        segmentLength -= 2;
-        
-        // Пропускаем данные сегмента
-        file.seek(file.position() + segmentLength);
-    }
-    
-    file.close();
-    return false;
-}
 
-// Функция для отображения JPG изображений
-bool displayJpgImage(const String& filename, int centerX, int centerY, int maxWidth, int maxHeight) {
-    Serial.println("[DEBUG] displayJpgImage called");
-    Serial.println("[DEBUG] Filename: " + filename);
-    Serial.printf("[DEBUG] Center: (%d, %d), Size: %dx%d\n", centerX, centerY, maxWidth, maxHeight);
-    
-    // Проверяем существование файла
-    if (!SD.exists(filename)) {
-        Serial.println("[ERROR] JPG file does not exist: " + filename);
-        return false;
-    }
-    
-    // Рассчитываем позицию для центрирования (как для PNG)
-    int posX = centerX - (maxWidth / 2);
-    int posY = centerY - (maxHeight / 2);
-    Serial.printf("[DEBUG] Calculated position: (%d, %d)\n", posX, posY);
-    
-    // Используем простой вызов M5.Lcd.drawJpgFile (как для PNG)
-    Serial.println("[DEBUG] Calling M5.Lcd.drawJpgFile...");
-    M5.Lcd.drawJpgFile(filename.c_str(), posX, posY);
-    Serial.println("[DEBUG] M5.Lcd.drawJpgFile completed");
-    return true;
-}
-
-// Функция для получения размеров PNG изображения из заголовка файла
-bool getPngDimensions(const String& filename, int& width, int& height) {
-    File file = SD.open(filename, FILE_READ);
-    if (!file) {
-        return false;
-    }
-    
-    // PNG файлы начинаются с сигнатуры из 8 байт
-    uint8_t signature[8];
-    if (file.read(signature, 8) != 8) {
-        file.close();
-        return false;
-    }
-    
-    // Проверяем сигнатуру PNG
-    static const uint8_t PNG_SIGNATURE[8] = {137, 80, 78, 71, 13, 10, 26, 10};
-    for (int i = 0; i < 8; i++) {
-        if (signature[i] != PNG_SIGNATURE[i]) {
-            file.close();
-            return false;
-        }
-    }
-    
-    // После сигнатуры идет чанк IHDR, который содержит размеры
-    // Формат: длина (4 байта) + тип (4 байта) + данные + CRC (4 байта)
-    uint8_t chunkHeader[8];
-    if (file.read(chunkHeader, 8) != 8) {
-        file.close();
-        return false;
-    }
-    
-    // Проверяем, что это чанк IHDR (тип "IHDR")
-    if (chunkHeader[4] != 'I' || chunkHeader[5] != 'H' || chunkHeader[6] != 'D' || chunkHeader[7] != 'R') {
-        file.close();
-        return false;
-    }
-    
-    // Читаем ширину и высоту (по 4 байта каждый, в формате big-endian)
-    uint8_t dimensions[8];
-    if (file.read(dimensions, 8) != 8) {
-        file.close();
-        return false;
-    }
-    
-    // Ширина и высота в PNG хранятся в формате big-endian
-    width = (dimensions[0] << 24) | (dimensions[1] << 16) | (dimensions[2] << 8) | dimensions[3];
-    height = (dimensions[4] << 24) | (dimensions[5] << 16) | (dimensions[6] << 8) | dimensions[7];
-    
-    file.close();
-    return true;
-}
-
-// Функция для отображения PNG изображений
-bool displayPngImage(const String& filename, int centerX, int centerY, int maxWidth, int maxHeight) {
-    Serial.println("[DEBUG] displayPngImage called");
-    Serial.println("[DEBUG] Filename: " + filename);
-    Serial.printf("[DEBUG] Center: (%d, %d), Size: %dx%d\n", centerX, centerY, maxWidth, maxHeight);
-    
-    // Проверяем существование файла
-    if (!SD.exists(filename)) {
-        Serial.println("[ERROR] PNG file does not exist: " + filename);
-        return false;
-    }
-    
-    // Рассчитываем позицию для центрирования
-    int posX = centerX - (maxWidth / 2);
-    int posY = centerY - (maxHeight / 2);
-    Serial.printf("[DEBUG] Calculated position: (%d, %d)\n", posX, posY);
-    
-    // Используем M5.Lcd.drawPngFile
-    Serial.println("[DEBUG] Calling M5.Lcd.drawPngFile...");
-    M5.Lcd.drawPngFile(filename.c_str(), posX, posY, maxWidth, maxHeight);
-    Serial.println("[DEBUG] M5.Lcd.drawPngFile completed");
-    return true;
-}
 
 
 
@@ -374,21 +204,7 @@ namespace screens {
                 }
                 break;
                 
-            case FORMAT_JPG:
-                Serial.println("[DEBUG] Processing JPG format");
-                Serial.printf("[DEBUG] Frame dimensions: %dx%d, position: (%d, %d)\n", frameWidth, frameHeight, posX, posY);
-                // Используем встроенную функцию M5GFX для JPG
-                success = displayJpgImage(filename, posX, posY, frameWidth, frameHeight);
-                Serial.printf("[DEBUG] JPG display result: %s\n", success ? "SUCCESS" : "FAILED");
-                break;
-                
-            case FORMAT_PNG:
-                Serial.println("[DEBUG] Processing PNG format");
-                Serial.printf("[DEBUG] Frame dimensions: %dx%d, position: (%d, %d)\n", frameWidth, frameHeight, posX, posY);
-                // Используем встроенную функцию M5GFX для PNG
-                success = displayPngImage(filename, posX, posY, frameWidth, frameHeight);
-                Serial.printf("[DEBUG] PNG display result: %s\n", success ? "SUCCESS" : "FAILED");
-                break;
+
                 
             default:
                 success = false;
@@ -522,51 +338,7 @@ namespace screens {
                 }
                 break;
                 
-            case FORMAT_JPG:
-                {
-                    // Получаем размеры изображения
-                    int imgWidth, imgHeight;
-                    if (getJpgDimensions(filename, imgWidth, imgHeight)) {
-                        // Рассчитываем масштаб для вписывания в экран
-                        float scale = min((float)screenWidth / imgWidth, (float)screenHeight / imgHeight);
-                        int scaledWidth = floor(imgWidth * scale);
-                        int scaledHeight = floor(imgHeight * scale);
-                        
-                        // Рассчитываем позицию для центрирования (верхний левый угол)
-                        int jpgPosX = (screenWidth - scaledWidth) / 2;
-                        int jpgPosY = (screenHeight - scaledHeight) / 2;
-                        
-                        // Отображаем JPG с масштабированием
-                        success = M5.Display.drawJpgFile(filename.c_str(), jpgPosX, jpgPosY, scaledWidth, scaledHeight, 0, 0, 0, 0);
-                    } else {
-                        // Если не удалось получить размеры, пробуем отобразить напрямую
-                        success = displayJpgImage(filename, posX, posY, screenWidth, screenHeight);
-                    }
-                }
-                break;
-                
-            case FORMAT_PNG:
-                {
-                    // Получаем размеры изображения
-                    int imgWidth, imgHeight;
-                    if (getPngDimensions(filename, imgWidth, imgHeight)) {
-                        // Рассчитываем масштаб для вписывания в экран
-                        float scale = min((float)screenWidth / imgWidth, (float)screenHeight / imgHeight);
-                        int scaledWidth = floor(imgWidth * scale);
-                        int scaledHeight = floor(imgHeight * scale);
-                        
-                        // Рассчитываем позицию для центрирования (верхний левый угол)
-                        int pngPosX = (screenWidth - scaledWidth) / 2;
-                        int pngPosY = (screenHeight - scaledHeight) / 2;
-                        
-                        // Отображаем PNG с масштабированием
-                        success = M5.Display.drawPngFile(filename.c_str(), pngPosX, pngPosY, scaledWidth, scaledHeight, 0, 0, 0, 0);
-                    } else {
-                        // Если не удалось получить размеры, пробуем отобразить напрямую
-                        success = displayPngImage(filename, posX, posY, screenWidth, screenHeight);
-                    }
-                }
-                break;
+
                 
             default:
                 success = false;

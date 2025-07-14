@@ -30,7 +30,7 @@ namespace sd_gateway {
             html += "<li>";
             html += "<input type='checkbox' name='file' value='" + name + "'> ";
             html += name + " <a href='/delete?file=" + name + "'>[delete]</a>";
-            if (name.endsWith(".txt") || name.endsWith(".json")) {
+            if (name.endsWith(".txt")) {
                 html += " <a href='/edit?file=" + name + "'>[edit]</a>";
             }
             html += "</li>";
@@ -110,8 +110,8 @@ namespace sd_gateway {
         }
         String filename = server->arg("file");
         if (!filename.startsWith("/")) filename = "/" + filename;
-        if (!(filename.endsWith(".txt") || filename.endsWith(".json"))) {
-            server->send(403, "text/plain", "Editing only allowed for .txt and .json files");
+        if (!filename.endsWith(".txt")) {
+            server->send(403, "text/plain", "Editing only allowed for .txt files");
             return;
         }
         File file = SD.open(filename, FILE_READ);
