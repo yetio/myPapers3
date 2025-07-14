@@ -16,11 +16,14 @@
 #include "network/wifi_manager.h" // Include WiFi manager
 #include "apps/text_lang_test/app_screen.h" // Include Text Language Test app header
 #include "apps/geometry_test/app_screen.h" // Include Geometry Test app header
+#include "apps/swipe_test/app_screen.h" // Include Swipe Test app header
 
 bool isRendering = false;
 bool ui_needs_update = true; // Флаг для управления обновлением UI
 unsigned long lastTouchTime = 0;
 const unsigned long TOUCH_DEBOUNCE_DELAY = 300; // Задержка дебаунсинга в миллисекундах
+bool previousTouchState = false; // Для отслеживания предыдущего состояния касания
+int lastTouchX = 0, lastTouchY = 0; // Последние координаты касания
 
 // Custom clamp function if std::clamp is unavailable
 template <typename T>
@@ -81,6 +84,11 @@ void loop() {
     if (currentScreen == GEOMETRY_TEST_SCREEN) {
         apps_geometry_test::updateAnimation();
     }
+    
+    // Update swipe test app animation if it's active
+    if (currentScreen == SWIPE_TEST_SCREEN) {
+        apps_swipe_test::updateAnimation();
+    }
 
     if (isRendering) {
         // Block actions during rendering
@@ -88,16 +96,24 @@ void loop() {
     }
 
     // Check for touch input with debouncing
-    if (M5.Display.touch() && !isRendering && (millis() - lastTouchTime > TOUCH_DEBOUNCE_DELAY)) {
+    bool currentTouchState = M5.Display.touch();
+    
+    if (currentTouchState && !isRendering && (millis() - lastTouchTime > TOUCH_DEBOUNCE_DELAY)) {
         lgfx::touch_point_t tp;
         if (M5.Display.getTouchRaw(&tp, 1)) {
             M5.Display.convertRawXY(&tp, 1);
             int16_t x = tp.x;
             int16_t y = tp.y;
             
+            lastTouchX = x;
+            lastTouchY = y;
+            
             // Обновляем время последнего касания
             lastTouchTime = millis();
-            isRendering = true;
+            // Убираем isRendering = true для swipe_test, чтобы не блокировать обработку отпускания
+            if (currentScreen != SWIPE_TEST_SCREEN) {
+                isRendering = true;
+            }
             ui_needs_update = true; // Устанавливаем флаг для обновления UI
             
             // #ifdef DEBUG_TOUCH
@@ -123,6 +139,7 @@ void loop() {
                     #endif
                     footer.invokeButtonAction(buttonIndex);
                 }
+                isRendering = false; // Сбрасываем флаг после обработки footer
             } else {
                 // Handle file selection if on FILES_SCREEN
                 if (currentScreen == FILES_SCREEN) {
@@ -161,10 +178,25 @@ void loop() {
                          screens::handleAppsSelection(touchedRow);
                     }
                 }
+                // Handle Swipe Test app touch
+                else if (currentScreen == SWIPE_TEST_SCREEN) {
+                    apps_swipe_test::handleTouch(x, y, true);
+                    // Не сбрасываем isRendering для swipe_test, так как нужно обработать отпускание
+                } else {
+                    isRendering = false; // Сбрасываем флаг для других экранов
+                }
             }
             
 
         }
         // Убрано постоянное сообщение "No touch data available" для предотвращения спама в консоли
     }
+    
+    // Handle touch release for swipe test
+    if (previousTouchState && !currentTouchState && currentScreen == SWIPE_TEST_SCREEN) {
+        apps_swipe_test::handleTouch(lastTouchX, lastTouchY, false);
+        isRendering = false; // Сбрасываем флаг после обработки отпускания касания
+    }
+    
+    previousTouchState = currentTouchState;
 }

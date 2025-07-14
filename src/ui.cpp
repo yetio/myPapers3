@@ -6,6 +6,7 @@
 #include "apps/text_lang_test/app_screen.h"
 #include "apps/test2/app_screen.h"
 #include "apps/geometry_test/app_screen.h"
+#include "apps/swipe_test/app_screen.h"
 
 // Флаг первого рендера: на нем - полное обновление, далее - быстрый DU4
 bool firstRenderDone = false;
@@ -206,6 +207,10 @@ void renderCurrentScreen() {
         case GEOMETRY_TEST_SCREEN: // Handle Geometry Test app screen
             footer.setButtons(appFooterButtons, 4);
             apps_geometry_test::drawAppScreen();
+            break;
+        case SWIPE_TEST_SCREEN: // Handle Swipe Test app screen
+            footer.setButtons(appFooterButtons, 4);
+            apps_swipe_test::drawAppScreen();
             break;
         case SD_GATEWAY_SCREEN:
             footer.setButtons(sdgwFooterButtons, 4);

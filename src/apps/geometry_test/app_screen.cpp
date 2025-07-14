@@ -11,7 +11,7 @@ namespace apps_geometry_test {
     const int WORK_AREA_HEIGHT = WORK_AREA_BOTTOM - WORK_AREA_Y;
     
     // Переменная для управления отрисовкой горизонтальных линий
-    static bool showHorizontalLines = true;
+    static bool showHorizontalLines = false;
     
     // Структура для хранения параметров фигуры
     struct Shape {
