@@ -15,6 +15,7 @@
 #include "sd_gateway.h"
 #include "network/wifi_manager.h" // Include WiFi manager
 #include "apps/text_lang_test/app_screen.h" // Include Text Language Test app header
+#include "apps/geometry_test/app_screen.h" // Include Geometry Test app header
 
 bool isRendering = false;
 bool ui_needs_update = true; // Флаг для управления обновлением UI
@@ -75,6 +76,11 @@ void loop() {
     
     // Проверяем завершение сканирования Wi-Fi
     WiFiManager::getInstance().updateScanResults();
+    
+    // Update geometry test app animation if it's active
+    if (currentScreen == GEOMETRY_TEST_SCREEN) {
+        apps_geometry_test::updateAnimation();
+    }
 
     if (isRendering) {
         // Block actions during rendering

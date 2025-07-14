@@ -5,12 +5,13 @@
 // Include app headers
 #include "../apps/text_lang_test/app_screen.h"
 #include "../apps/test2/app_screen.h"
+#include "../apps/geometry_test/app_screen.h"
 
 namespace screens {
 
     // Static list of applications
-    const String installedApps[] = {"text_lang_test", "test2"}; // Hardcoded list based on src/apps
-    const int installedAppsCount = 2;
+    const String installedApps[] = {"text_lang_test", "test2", "geometry_test"}; // Hardcoded list based on src/apps
+    const int installedAppsCount = 3;
 
     void drawAppsScreen() {
         ::updateHeader(); // Update header for this screen
@@ -48,6 +49,11 @@ namespace screens {
                 ::displayMessage("Launching test2 app...");
                 // Set current screen to TEST2_APP_SCREEN
                 ::currentScreen = TEST2_APP_SCREEN;
+                ::renderCurrentScreen(); // Re-render to show app screen
+            } else if (selectedApp == "geometry_test") {
+                ::displayMessage("Launching geometry test app...");
+                // Set current screen to GEOMETRY_TEST_SCREEN
+                ::currentScreen = GEOMETRY_TEST_SCREEN;
                 ::renderCurrentScreen(); // Re-render to show app screen
             } else {
                 // This case should not be reached with a static list unless there's an index issue,
