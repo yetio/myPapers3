@@ -18,6 +18,7 @@
 #include "apps/geometry_test/app_screen.h"
 #include "apps/swipe_test/app_screen.h"
 #include "apps/reader/app_screen.h"
+#include "apps/calculator/app_screen.h"
 
 bool isRendering = false;
 bool ui_needs_update = true;
@@ -168,6 +169,10 @@ void loop() {
                 else if (currentScreen == READER_APP_SCREEN) {
                     int touchedRow = getRowFromY(y);
                     apps_reader::handleTouch(touchedRow, x, y);
+                    isRendering = false;
+                } else if (currentScreen == CALCULATOR_APP_SCREEN) {
+                    int touchedRow = getRowFromY(y);
+                    apps_calculator::handleTouch(touchedRow, x, y);
                     isRendering = false;
                 } else {
                     isRendering = false;

@@ -20,6 +20,7 @@
 - **debug_config.h** — Debug configuration macros for various system components
 
 ### Applications (apps/)
+- **calculator/** — Calculator app with basic arithmetic operations and AC functionality
 - **geometry_test/** — Geometry test app with animated shapes and timer
 - **reader/** — Text reader app with file list and pagination
 - **swipe_test/** — Swipe gesture test app with touch tracking
@@ -39,6 +40,7 @@
 - **File System Support:** Complete SD card integration with file management capabilities
 - **Multi-language Support:** Text rendering and display for various languages (English, Russian, Japanese, Chinese)
 - **Built-in Applications:**
+  - Calculator with basic arithmetic operations
   - Text reader with pagination
   - Geometry test with animated shapes
   - Swipe gesture testing
@@ -114,6 +116,7 @@ The project is easily extensible by adding new screens, services, and button han
 - **debug_config.h** — Макросы конфигурации отладки для различных компонентов системы
 
 ### Приложения (apps/)
+- **calculator/** — Приложение калькулятора с базовыми арифметическими операциями и функцией AC
 - **geometry_test/** — Приложение тестирования геометрии с анимированными фигурами и таймером
 - **reader/** — Приложение для чтения текста с списком файлов и пагинацией
 - **swipe_test/** — Приложение тестирования жестов свайпа с отслеживанием касаний
@@ -145,6 +148,7 @@ The project is easily extensible by adding new screens, services, and button han
 - Настраиваемые языковые параметры
 
 ### Встроенные приложения
+- **Калькулятор**: базовые арифметические операции с функцией AC
 - **Чтение текста**: просмотр текстовых файлов с пагинацией
 - **Тест геометрии**: анимированные геометрические фигуры с таймером
 - **Тест свайпов**: отслеживание и визуализация жестов касания
@@ -283,6 +287,7 @@ src/
 - **debug_config.h** — 様々なシステムコンポーネント用デバッグ設定マクロ
 
 ### アプリケーション（apps/）
+- **calculator/** — 基本的な算術演算（+、-、×、÷）とAC機能を含む計算機アプリ
 - **geometry_test/** — アニメーション図形とタイマーを含む幾何学テストアプリ
 - **reader/** — ファイルリストとページネーション機能を含むテキストリーダーアプリ
 - **swipe_test/** — タッチトラッキング機能を含むスワイプジェスチャーテストアプリ
@@ -314,6 +319,7 @@ src/
 - 設定可能な言語パラメータ
 
 ### 内蔵アプリケーション
+- **計算機**：基本的な算術演算（+、-、×、÷）とAC機能
 - **テキスト読み取り**：ページネーション機能付きテキストファイル表示
 - **幾何学テスト**：タイマー付きアニメーション幾何図形
 - **スワイプテスト**：タッチジェスチャーの追跡と可視化
@@ -452,6 +458,7 @@ src/
 - **debug_config.h** — 系统各组件的调试配置宏
 
 ### 应用程序 (apps/)
+- **calculator/** — 计算器应用，包含基本算术运算（+、-、×、÷）和AC功能
 - **geometry_test/** — 几何测试应用，包含动画图形和计时器
 - **reader/** — 文本阅读应用，包含文件列表和分页功能
 - **swipe_test/** — 滑动手势测试应用，包含触摸跟踪
@@ -483,6 +490,7 @@ src/
 - 可配置的语言参数
 
 ### 内置应用程序
+- **计算器**：基本算术运算（+、-、×、÷）和AC功能
 - **文本阅读**：带分页功能的文本文件查看
 - **几何测试**：带计时器的动画几何图形
 - **滑动测试**：触摸手势跟踪和可视化
@@ -621,6 +629,7 @@ src/
 - **debug_config.h** — विभिन्न सिस्टम कंपोनेंट्स के लिए डिबग कॉन्फ़िगरेशन मैक्रो
 
 ### एप्लिकेशन (apps/)
+- **calculator/** — बुनियादी अंकगणितीय संचालन (+, -, ×, ÷) और AC फ़ंक्शन के साथ कैलकुलेटर ऐप
 - **geometry_test/** — एनिमेटेड आकार और टाइमर के साथ ज्यामिति टेस्ट ऐप
 - **reader/** — फाइल लिस्ट और पेजिनेशन के साथ टेक्स्ट रीडर ऐप
 - **swipe_test/** — टच ट्रैकिंग के साथ स्वाइप जेस्चर टेस्ट ऐप
@@ -652,6 +661,7 @@ src/
 - कॉन्फ़िगरेबल भाषा पैरामीटर
 
 ### अंतर्निहित एप्लिकेशन
+- **कैलकुलेटर**: बुनियादी अंकगणितीय संचालन (+, -, ×, ÷) और AC फ़ंक्शन
 - **टेक्स्ट रीडिंग**: पेजिनेशन के साथ टेक्स्ट फाइल व्यूइंग
 - **ज्यामिति टेस्ट**: टाइमर के साथ एनिमेटेड ज्यामितीय आकार
 - **स्वाइप टेस्ट**: टच जेस्चर ट्रैकिंग और विज़ुअलाइज़ेशन

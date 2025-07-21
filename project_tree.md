@@ -12,6 +12,9 @@ M5Stack Papers3 project file tree:
 ├── project_tree.md
 └── src/
     ├── apps/
+    │   ├── calculator/
+    │   │   ├── app_screen.cpp - Calculator app with basic arithmetic operations and AC functionality
+    │   │   └── app_screen.h - Header file for calculator app screen functions
     │   ├── geometry_test/
     │   │   ├── app_screen.cpp - Geometry test app with animated shapes and timer
     │   │   └── app_screen.h - Header file for geometry test app screen functions

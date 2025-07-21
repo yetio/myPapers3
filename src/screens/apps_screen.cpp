@@ -8,11 +8,12 @@
 #include "../apps/geometry_test/app_screen.h"
 #include "../apps/swipe_test/app_screen.h"
 #include "../apps/reader/app_screen.h"
+#include "../apps/calculator/app_screen.h"
 
 namespace screens {
 
-    const String installedApps[] = {"text_lang_test", "test2", "geometry_test", "swipe_test", "reader"};
-    const int installedAppsCount = 5;
+    const String installedApps[] = {"text_lang_test", "test2", "geometry_test", "swipe_test", "reader", "calculator"};
+    const int installedAppsCount = 6;
 
     void drawAppsScreen() {
         ::updateHeader();
@@ -58,6 +59,9 @@ namespace screens {
                 ::renderCurrentScreen();
             } else if (selectedApp == "reader") {
                 ::currentScreen = READER_APP_SCREEN;
+                ::renderCurrentScreen();
+            } else if (selectedApp == "calculator") {
+                ::currentScreen = CALCULATOR_APP_SCREEN;
                 ::renderCurrentScreen();
             } else {
                 ::displayMessage("Unknown application selected.");

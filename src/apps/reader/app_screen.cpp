@@ -10,7 +10,7 @@ namespace apps_reader {
     
 
     const int WORK_AREA_X = 0;
-    const int WORK_AREA_Y = 170;
+    const int WORK_AREA_Y = 120;
     const int WORK_AREA_WIDTH = 540;
     const int WORK_AREA_BOTTOM = 845;
     

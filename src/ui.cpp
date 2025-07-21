@@ -6,6 +6,7 @@
 #include "apps/test2/app_screen.h"
 #include "apps/geometry_test/app_screen.h"
 #include "apps/swipe_test/app_screen.h"
+#include "apps/calculator/app_screen.h"
 
 
 bool firstRenderDone = false;
@@ -214,6 +215,10 @@ void renderCurrentScreen() {
         case READER_APP_SCREEN:
             footer.setButtons(appFooterButtons, 4);
             apps_reader::drawAppScreen();
+            break;
+        case CALCULATOR_APP_SCREEN:
+            footer.setButtons(appFooterButtons, 4);
+            apps_calculator::drawAppScreen();
             break;
         case SD_GATEWAY_SCREEN:
             footer.setButtons(sdgwFooterButtons, 4);
