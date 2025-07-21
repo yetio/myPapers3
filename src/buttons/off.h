@@ -1,4 +1,3 @@
-// buttons/off.h
 #ifndef BUTTONS_OFF_H
 #define BUTTONS_OFF_H
 
@@ -6,4 +5,4 @@
 
 void showOffScreen();
 
-#endif // BUTTONS_OFF_H
+#endif

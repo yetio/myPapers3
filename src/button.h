@@ -11,7 +11,7 @@ public:
     bool isPressed(int touchX, int touchY) const;
     void press() const;
 
-    String getLabel() const; // Getter for label
+    String getLabel() const;
 
 private:
     int _x;
@@ -22,4 +22,4 @@ private:
     std::function<void()> _onPress;
 };
 
-#endif // BUTTON_H
+#endif

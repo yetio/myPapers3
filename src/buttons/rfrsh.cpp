@@ -1,4 +1,3 @@
-// ./buttons/rfrsh.cpp
 #include "rfrsh.h"
 #include "../ui.h"
 #include "../network/wifi_manager.h"

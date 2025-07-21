@@ -1,4 +1,3 @@
-// sdcard.cpp
 #include "sdcard.h"
 #include "debug_config.h"
 
@@ -17,7 +16,7 @@ bool initSDCard() {
 }
 
 bool isSDCardMounted() {
-    // Remove SD.begin() to prevent re-initialization
+
     if (!SD.exists("/")) {
         Serial.println("[Error] SD card not mounted.");
         sdCardStatus = "SD: Disconnected";

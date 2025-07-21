@@ -129,7 +129,7 @@ namespace sd_gateway {
         html += "<form method='POST' action='/edit'>";
         html += "<input type='hidden' name='file' value='" + filename + "'>";
         html += "<textarea name='content' rows='25' cols='80'>";
-        // Экранируем спецсимволы для HTML
+
         for (size_t i = 0; i < content.length(); ++i) {
             char c = content[i];
             if (c == '<') html += "&lt;";
@@ -209,7 +209,7 @@ namespace sd_gateway {
 
     void toggleOrShow() {
         if (WiFi.status() != WL_CONNECTED) {
-            displayMessage("Wi-Fi не подключен");
+            displayMessage("Wi-Fi not connected");
             return;
         }
         if (active) {

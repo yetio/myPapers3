@@ -2,10 +2,9 @@
 #include "../ui.h"
 
 namespace keyboards {
-    // Define current keyboard state
-    KeyboardState currentKeyboardState = LOWERCASE; // Start with lowercase
+    KeyboardState currentKeyboardState = LOWERCASE;
 
-    // Function to get the current keyboard layout based on state
+
     const String (*getCurrentLayout())[KEYBOARD_COLS] {
         switch (currentKeyboardState) {
             case UPPERCASE:

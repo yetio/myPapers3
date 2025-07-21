@@ -6,4 +6,4 @@ namespace screens {
     void handleSdGatewayAction();
 }
 
-#endif // SD_GATEWAY_SCREEN_H 
+#endif

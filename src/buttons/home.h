@@ -1,4 +1,3 @@
-// buttons/home.h
 #ifndef HOME_H
 #define HOME_H
 
@@ -6,4 +5,4 @@
 
 void homeAction();
 
-#endif // HOME_H
+#endif

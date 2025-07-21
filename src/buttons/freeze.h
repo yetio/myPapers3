@@ -1,4 +1,3 @@
-// buttons/freeze.h
 #ifndef FREEZE_H
 #define FREEZE_H
 
@@ -6,4 +5,4 @@
 
 void freezeAction();
 
-#endif // FREEZE_H
+#endif

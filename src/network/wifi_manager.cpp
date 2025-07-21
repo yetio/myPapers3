@@ -8,11 +8,11 @@ bool WiFiManager::connect(const String& ssid, const String& password) {
     WiFi.begin(ssid.c_str(), password.c_str());
 
     unsigned long startTime = millis();
-    while (millis() - startTime < 5000) { // 5 second timeout
+    while (millis() - startTime < 5000) {
         if (WiFi.status() == WL_CONNECTED) {
             return true;
         }
-        yield();  // Неблокирующая пауза
+        yield();
     }
 
     return false;
@@ -30,7 +30,7 @@ bool WiFiManager::startScan() {
 
     WiFi.mode(WIFI_STA);
     WiFi.disconnect(true);
-    delay(100); // Даем время на отключение
+    delay(100);
 
     int result = WiFi.scanNetworks(true, true);
     if (result == WIFI_SCAN_FAILED) {

@@ -13,11 +13,11 @@ namespace screens {
         String status = sd_gateway::isActive() ? "On port :8080" : "Off";
         ::bufferRow("SD Gateway status: " + status, 3, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
         if (sd_gateway::isActive()) {
-            ::bufferRow("Веб-интерфейс: http://" + WiFi.localIP().toString() + ":" + String(sd_gateway::getPort()), 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
-            ::bufferRow("Отключите для завершения работы.", 8, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
+            ::bufferRow("Web interface: http://" + WiFi.localIP().toString() + ":" + String(sd_gateway::getPort()), 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
+            ::bufferRow("Disconnect to stop the server.", 8, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         } else {
-            ::bufferRow("Нажмите SD Gateway на главном экране", 5, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
-            ::bufferRow("для запуска сервера.", 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
+            ::bufferRow("Press SD Gateway on main screen", 5, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
+            ::bufferRow("to start the server.", 6, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         }
         ::drawRowsBuffered();
         footer.draw(footer.isVisible());
@@ -25,6 +25,5 @@ namespace screens {
     }
 
     void handleSdGatewayAction() {
-        // Заглушка для будущих действий
     }
-} 
+}

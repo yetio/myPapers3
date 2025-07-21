@@ -8,7 +8,7 @@
 
 namespace screens {
     void drawAppsScreen();
-    void handleAppsSelection(int selectedRow); // Function to handle selection on Apps screen
+    void handleAppsSelection(int selectedRow);
 }
 
-#endif // APPS_SCREEN_H 
+#endif

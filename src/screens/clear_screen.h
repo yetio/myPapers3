@@ -7,4 +7,4 @@ namespace screens {
     void drawClearScreen();
 }
 
-#endif // CLEAR_SCREEN_H
+#endif

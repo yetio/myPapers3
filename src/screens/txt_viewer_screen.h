@@ -1,4 +1,3 @@
-// ./screens/txt_viewer_screen.h
 #ifndef TXT_VIEWER_SCREEN_H
 #define TXT_VIEWER_SCREEN_H
 
@@ -7,9 +6,10 @@
 namespace screens {
     void drawTxtViewerScreen(const String& filename);
     void displayTxtFile(const String& filename);
-    void displayFullScreenFile(const String& filename); // For Freeze action
-    String getCurrentTxtFile(); // For Freeze action
-    void setupFreezeButton(); // Declare setupFreezeButton
+    void displayFullScreenFile(const String& filename);
+    String getCurrentTxtFile();
+    void setupFreezeButton();
+    void setupTxtViewerRotateButtons();
 }
 
-#endif // TXT_VIEWER_SCREEN_H
+#endif

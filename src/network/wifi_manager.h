@@ -43,4 +43,4 @@ private:
     std::function<void()> _onNetworkListUpdated;
 };
 
-#endif // WIFI_MANAGER_H
+#endif

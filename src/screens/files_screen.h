@@ -5,8 +5,8 @@
 
 namespace screens {
     void drawFilesScreen();
-    void handleTouch(int touchRow, int touchX, int touchY); // Добавлен третий аргумент
+    void handleTouch(int touchRow, int touchX, int touchY);
     void resetPagination();
 }
 
-#endif // FILES_SCREEN_H
+#endif

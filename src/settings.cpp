@@ -26,7 +26,7 @@ bool Settings::loadSettings() {
     _wifiSettings.ssid = doc["wifi"]["ssid"].as<String>();
     _wifiSettings.password = doc["wifi"]["password"].as<String>();
 
-    // Check and add new fields if they don't exist (for backward compatibility)
+
     bool saveNeeded = false;
     if (!doc.containsKey("lastConnectedSSID")) {
         doc["lastConnectedSSID"] = "";
@@ -41,9 +41,9 @@ bool Settings::loadSettings() {
     _lastConnectedPassword = doc["lastConnectedPassword"].as<String>();
 
     if (saveNeeded) {
-        // Close the current file handle before saving
+
         file.close();
-        saveSettings(); // Save the updated document back to the file
+        saveSettings();
     } else {
         file.close();
     }

@@ -1,4 +1,3 @@
-// ./screens/img_viewer_screen.h
 #ifndef IMG_VIEWER_SCREEN_H
 #define IMG_VIEWER_SCREEN_H
 
@@ -10,7 +9,8 @@ namespace screens {
     void displayFullScreenImgFile(const String& filename);
     String getCurrentImgFile();
     void setupImgViewerButtons();
+    void setupImgViewerRotateButtons();
     void clearImgViewerScreen();
 }
 
-#endif // IMG_VIEWER_SCREEN_H
+#endif

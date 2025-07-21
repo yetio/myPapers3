@@ -1,4 +1,3 @@
-// ./footer.h
 #ifndef FOOTER_H
 #define FOOTER_H
 
@@ -6,19 +5,15 @@
 #include <String>
 #include <functional>
 
-// Forward declaration to avoid cyclic dependency
 struct RowPosition;
 
-// Constants for footer
 const int MAX_FOOTER_BUTTONS = 4;
-
-// Structure for footer buttons
 struct FooterButton {
     String label;
     std::function<void()> action;
 };
 
-// Footer management
+
 class Footer {
 public:
     Footer();
@@ -36,4 +31,4 @@ private:
     bool visible;
 };
 
-#endif // FOOTER_H
+#endif
