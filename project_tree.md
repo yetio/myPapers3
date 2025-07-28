@@ -50,6 +50,16 @@ M5Stack Papers3 project file tree:
     ├── debug_config.h - Debug configuration macros for various system components
     ├── footer.cpp - Footer class implementation for bottom navigation buttons
     ├── footer.h - Header file for Footer class and FooterButton structure
+    ├── games/
+    │   ├── minesweeper/
+    │   │   ├── game.cpp - Minesweeper game implementation with 10x15 grid and 25 mines
+    │   │   └── game.h - Header file for Minesweeper game functions
+    │   ├── sudoku/
+    │   │   ├── game.cpp - 6x6 Sudoku puzzle game with number keyboard input and validation
+    │   │   └── game.h - Header file for Sudoku game functions
+    │   └── test/
+    │       ├── game.cpp - Simple test game displaying "Test" text with dashed border
+    │       └── game.h - Header file for test game functions
     ├── keyboards/
     │   ├── eng_keyboard.cpp - English keyboard implementation with layout switching
     │   └── eng_keyboard.h - Header file for English keyboard functions and layouts
@@ -102,8 +112,9 @@ M5Stack Papers3 project file tree:
 - `src/` - source code
 
 ### Source Code (src/)
-- `apps/` - applications (geometry_test, reader, swipe_test, test2, text_lang_test)
+- `apps/` - applications (calculator, geometry_test, reader, swipe_test, test2, text_lang_test)
 - `buttons/` - button handlers
+- `games/` - games (minesweeper, sudoku, test)
 - `keyboards/` - keyboards
 - `network/` - network functions
 - `screens/` - interface screens

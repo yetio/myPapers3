@@ -27,6 +27,11 @@
 - **test2/** — Simple test app displaying "Test2" text
 - **text_lang_test/** — Multi-language text display test app
 
+### Games (games/)
+- **sudoku/** — 6x6 Sudoku puzzle game with number keyboard input and validation
+- **minesweeper/** — Classic Minesweeper game with 10x15 grid and 25 mines
+- **test/** — Simple test game displaying "Test" text with dashed border
+
 ### Interface Components
 - **buttons/** — Individual handlers for various interface buttons (home, files, freeze, off, refresh, rotate)
 - **keyboards/** — Support for on-screen keyboards (English keyboard with layout switching)
@@ -75,12 +80,17 @@
 ├── project_tree.md             — Detailed project structure
 └── src/                        — Source code
     ├── apps/                   — Built-in applications
+    │   ├── calculator/         — Calculator with arithmetic operations
     │   ├── geometry_test/      — Animated shapes test
     │   ├── reader/             — Text file reader
     │   ├── swipe_test/         — Touch gesture testing
     │   ├── test2/              — Simple test application
     │   └── text_lang_test/     — Multi-language font test
     ├── buttons/                — Button action handlers
+    ├── games/                  — Built-in games
+    │   ├── minesweeper/        — Classic Minesweeper game
+    │   ├── sudoku/             — 6x6 Sudoku puzzle game
+    │   └── test/               — Simple test game
     ├── keyboards/              — On-screen keyboard implementations
     ├── network/                — Wi-Fi management
     ├── screens/                — UI screens (main, files, apps, etc.)
@@ -122,6 +132,11 @@ The project is easily extensible by adding new screens, services, and button han
 - **swipe_test/** — Приложение тестирования жестов свайпа с отслеживанием касаний
 - **test2/** — Простое тестовое приложение, отображающее текст "Test2"
 - **text_lang_test/** — Приложение тестирования отображения многоязычного текста
+
+### Игры (games/)
+- **sudoku/** — Игра-головоломка Судоку 6x6 с вводом чисел через клавиатуру и проверкой правильности
+- **minesweeper/** — Классическая игра Сапёр с сеткой 10x15 и 25 минами
+- **test/** — Простая тестовая игра, отображающая текст "Test" с пунктирной рамкой
 
 ### Компоненты интерфейса
 - **buttons/** — Отдельные обработчики для различных кнопок интерфейса (home, files, freeze, off, refresh, rotate)
@@ -202,6 +217,9 @@ The project is easily extensible by adding new screens, services, and button han
 ```
 src/
 ├── apps/                           # Приложения
+│   ├── calculator/                 # Калькулятор
+│   │   ├── app_screen.cpp          # Экран калькулятора с арифметическими операциями
+│   │   └── app_screen.h            # Заголовочный файл экрана
 │   ├── geometry_test/              # Тест геометрии с анимацией
 │   │   ├── app_screen.cpp          # Экран приложения с геометрическими фигурами
 │   │   └── app_screen.h            # Заголовочный файл экрана
@@ -224,6 +242,16 @@ src/
 │   ├── off_button.cpp              # Кнопка выключения
 │   ├── refresh_button.cpp          # Кнопка обновления
 │   └── rotate_button.cpp           # Кнопка поворота экрана
+├── games/                          # Игры
+│   ├── minesweeper/                # Сапёр
+│   │   ├── game.cpp                # Логика игры Сапёр
+│   │   └── game.h                  # Заголовочный файл игры
+│   ├── sudoku/                     # Судоку
+│   │   ├── game.cpp                # Логика игры Судоку 6x6
+│   │   └── game.h                  # Заголовочный файл игры
+│   └── test/                       # Тестовая игра
+│       ├── game.cpp                # Простая тестовая игра
+│       └── game.h                  # Заголовочный файл игры
 ├── keyboards/                      # Экранные клавиатуры
 │   ├── en_keyboard.cpp             # Английская клавиатура
 │   └── en_keyboard.h               # Заголовочный файл клавиатуры
@@ -293,6 +321,11 @@ src/
 - **swipe_test/** — タッチトラッキング機能を含むスワイプジェスチャーテストアプリ
 - **test2/** — "Test2"テキストを表示するシンプルなテストアプリ
 - **text_lang_test/** — 多言語テキスト表示テストアプリ
+
+### ゲーム（games/）
+- **sudoku/** — 数字キーボード入力と検証機能付き6x6数独パズルゲーム
+- **minesweeper/** — 10x15グリッドと25個の地雷を持つクラシックマインスイーパーゲーム
+- **test/** — 破線枠付きで"Test"テキストを表示するシンプルなテストゲーム
 
 ### インターフェースコンポーネント
 - **buttons/** — 様々なインターフェースボタンの個別ハンドラー（home、files、freeze、off、refresh、rotate）

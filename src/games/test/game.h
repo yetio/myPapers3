@@ -5,6 +5,7 @@
 
 namespace games_test {
     void drawGameScreen();
+    void drawDashedBorder();
     void handleTouch(int touchedRow, int x, int y);
     void initGame();
     void resetGame();

@@ -5,9 +5,11 @@
 
 namespace games_sudoku {
     void drawGameScreen();
-    void handleTouch(int touchedRow, int x, int y);
+    void handleTouch(int touchType, int x, int y);
     void initGame();
     void resetGame();
+    void handleKeyboardInput(const String& key);
+    void hideKeyboard();
 }
 
 #endif
