@@ -26,8 +26,9 @@ namespace screens {
 
         ::bufferRow("Apps", 7, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
 
+        ::bufferRow("Games", 8, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, true);
 
-        for (int row = 8; row <= 13; ++row) {
+        for (int row = 9; row <= 13; ++row) {
             ::bufferRow("", row, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
         }
     }

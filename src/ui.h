@@ -18,6 +18,7 @@
 #include "screens/clear_screen.h"
 #include "screens/wifi_screen.h" 
 #include "screens/sd_gateway_screen.h"
+#include "screens/games_screen.h"
 
 
 #include "buttons/home.h"
@@ -75,12 +76,16 @@ enum ScreenType {
     CLEAR_SCREEN,
     WIFI_SCREEN,
     APPS_SCREEN,
+    GAMES_SCREEN,
     TEXT_LANG_TEST_SCREEN,
     TEST2_APP_SCREEN,
     GEOMETRY_TEST_SCREEN,
     SWIPE_TEST_SCREEN,
     READER_APP_SCREEN,
     CALCULATOR_APP_SCREEN,
+    MINESWEEPER_GAME_SCREEN,
+    SUDOKU_GAME_SCREEN,
+    TEST_GAME_SCREEN,
     SD_GATEWAY_SCREEN
 };
 
@@ -115,6 +120,7 @@ void bufferRow(const String& text, int row, uint16_t textColor = TFT_BLACK, uint
 void drawRowsBuffered();
 void renderCurrentScreen();
 void clearAllBuffers();
+void setCurrentScreen(ScreenType screen);
 
 
 void setUniversalFont();
@@ -141,6 +147,7 @@ namespace screens {
     void drawClearScreen();
     void startWiFiScan();
     void drawAppsScreen();
+    void drawGamesScreen();
 
     void drawSdGatewayScreen();
     void handleSdGatewayAction();

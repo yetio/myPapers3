@@ -7,6 +7,10 @@
 #include "apps/geometry_test/app_screen.h"
 #include "apps/swipe_test/app_screen.h"
 #include "apps/calculator/app_screen.h"
+#include "games/minesweeper/game.h"
+#include "games/sudoku/game.h"
+#include "games/test/game.h"
+#include "screens/games_screen.h"
 
 
 bool firstRenderDone = false;
@@ -159,7 +163,11 @@ void renderCurrentScreen() {
 
 
     rowsBufferCount = 0;
-    updateHeader();
+    if (currentScreen != MINESWEEPER_GAME_SCREEN && 
+        currentScreen != SUDOKU_GAME_SCREEN && 
+        currentScreen != TEST_GAME_SCREEN) {
+        updateHeader();
+    }
 
 
     RowPosition contentStart = getRowPosition(2);
@@ -196,6 +204,9 @@ void renderCurrentScreen() {
         case APPS_SCREEN:
             screens::drawAppsScreen();
             break;
+        case GAMES_SCREEN:
+            drawGamesScreen();
+            break;
         case TEXT_LANG_TEST_SCREEN:
             footer.setButtons(appFooterButtons, 4);
             apps_text_lang_test::drawAppScreen();
@@ -220,6 +231,15 @@ void renderCurrentScreen() {
             footer.setButtons(appFooterButtons, 4);
             apps_calculator::drawAppScreen();
             break;
+        case MINESWEEPER_GAME_SCREEN:
+            games_minesweeper::drawGameScreen();
+            break;
+        case SUDOKU_GAME_SCREEN:
+            games_sudoku::drawGameScreen();
+            break;
+        case TEST_GAME_SCREEN:
+            games_test::drawGameScreen();
+            break;
         case SD_GATEWAY_SCREEN:
             footer.setButtons(sdgwFooterButtons, 4);
             screens::drawSdGatewayScreen();
@@ -230,7 +250,11 @@ void renderCurrentScreen() {
     drawRowsBuffered();
 
 
-    footer.draw(footer.isVisible());
+    if (currentScreen != MINESWEEPER_GAME_SCREEN && 
+        currentScreen != SUDOKU_GAME_SCREEN && 
+        currentScreen != TEST_GAME_SCREEN) {
+        footer.draw(footer.isVisible());
+    }
 
     M5.Display.endWrite();
 }
@@ -372,5 +396,11 @@ void navigateUp() {
     };
     footer.setButtons(filesFooterButtons, 4);
     
+    renderCurrentScreen();
+}
+
+
+void setCurrentScreen(ScreenType screen) {
+    currentScreen = screen;
     renderCurrentScreen();
 }

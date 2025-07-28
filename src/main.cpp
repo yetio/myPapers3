@@ -11,6 +11,7 @@
 #include "settings.h"
 #include "screens/wifi_screen.h"
 #include "screens/apps_screen.h"
+#include "screens/games_screen.h"
 #include "keyboards/eng_keyboard.h"
 #include "sd_gateway.h"
 #include "network/wifi_manager.h"
@@ -19,6 +20,10 @@
 #include "apps/swipe_test/app_screen.h"
 #include "apps/reader/app_screen.h"
 #include "apps/calculator/app_screen.h"
+#include "games/minesweeper/game.h"
+#include "games/sudoku/game.h"
+#include "games/test/game.h"
+#include "screens/games_screen.h"
 
 bool isRendering = false;
 bool ui_needs_update = true;
@@ -107,7 +112,10 @@ void loop() {
             
 
 
-            if (footer.isVisible() && y >= (EPD_HEIGHT - 60)) {
+            if (footer.isVisible() && y >= (EPD_HEIGHT - 60) && 
+                currentScreen != MINESWEEPER_GAME_SCREEN && 
+                currentScreen != SUDOKU_GAME_SCREEN && 
+                currentScreen != TEST_GAME_SCREEN) {
                 int buttonCount = footer.getButtonCount();
                 if (buttonCount == 0) return;
 
@@ -147,6 +155,10 @@ void loop() {
                         displayMessage("Apps pressed");
                         currentScreen = APPS_SCREEN;
                         renderCurrentScreen();
+                    } else if (touchedRow == 8) {
+                        displayMessage("Games pressed");
+                        currentScreen = GAMES_SCREEN;
+                        renderCurrentScreen();
                     }
                 }
 
@@ -161,6 +173,14 @@ void loop() {
                     }
                 }
 
+                else if (currentScreen == GAMES_SCREEN) {
+                    int touchedRow = getRowFromY(y);
+                    if (touchedRow >= 3) {
+                         handleGamesScreenTouch(touchedRow, x, y);
+                    }
+                    isRendering = false;
+                }
+
                 else if (currentScreen == SWIPE_TEST_SCREEN) {
                     apps_swipe_test::handleTouch(x, y, true);
 
@@ -173,6 +193,18 @@ void loop() {
                 } else if (currentScreen == CALCULATOR_APP_SCREEN) {
                     int touchedRow = getRowFromY(y);
                     apps_calculator::handleTouch(touchedRow, x, y);
+                    isRendering = false;
+                } else if (currentScreen == MINESWEEPER_GAME_SCREEN) {
+                    int touchedRow = getRowFromY(y);
+                    games_minesweeper::handleTouch(touchedRow, x, y);
+                    isRendering = false;
+                } else if (currentScreen == SUDOKU_GAME_SCREEN) {
+                    int touchedRow = getRowFromY(y);
+                    games_sudoku::handleTouch(touchedRow, x, y);
+                    isRendering = false;
+                } else if (currentScreen == TEST_GAME_SCREEN) {
+                    int touchedRow = getRowFromY(y);
+                    games_test::handleTouch(touchedRow, x, y);
                     isRendering = false;
                 } else {
                     isRendering = false;
