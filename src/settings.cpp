@@ -26,6 +26,18 @@ bool Settings::loadSettings() {
     _wifiSettings.ssid = doc["wifi"]["ssid"].as<String>();
     _wifiSettings.password = doc["wifi"]["password"].as<String>();
 
+    if (doc.containsKey("todoist") && doc["todoist"].containsKey("token")) {
+        _todoistToken = doc["todoist"]["token"].as<String>();
+    } else {
+        _todoistToken = "";
+    }
+
+    if (doc.containsKey("ical") && doc["ical"].containsKey("url")) {
+        _icalUrl = doc["ical"]["url"].as<String>();
+    } else {
+        _icalUrl = "";
+    }
+
 
     bool saveNeeded = false;
     if (!doc.containsKey("lastConnectedSSID")) {
@@ -63,6 +75,8 @@ bool Settings::saveSettings() {
     doc["wifi"]["password"] = _wifiSettings.password;
     doc["lastConnectedSSID"] = _lastConnectedSSID;
     doc["lastConnectedPassword"] = _lastConnectedPassword;
+    doc["todoist"]["token"] = _todoistToken;
+    doc["ical"]["url"] = _icalUrl;
 
     if (serializeJson(doc, file) == 0) {
         Serial.println("Failed to write to settings file.");
@@ -102,6 +116,24 @@ void Settings::setLastConnectedPassword(const String& password) {
     saveSettings();
 }
 
+String Settings::getTodoistToken() const {
+    return _todoistToken;
+}
+
+void Settings::setTodoistToken(const String& token) {
+    _todoistToken = token;
+    saveSettings();
+}
+
+String Settings::getICalUrl() const {
+    return _icalUrl;
+}
+
+void Settings::setICalUrl(const String& url) {
+    _icalUrl = url;
+    saveSettings();
+}
+
 bool Settings::_createDefaultSettings() {
     File file = SD.open(_settingsFile, FILE_WRITE);
     if (!file) {
@@ -114,6 +146,8 @@ bool Settings::_createDefaultSettings() {
     doc["wifi"]["password"] = "";
     doc["lastConnectedSSID"] = "";
     doc["lastConnectedPassword"] = "";
+    doc["todoist"]["token"] = "";
+    doc["ical"]["url"] = "";
 
     if (serializeJson(doc, file) == 0) {
         Serial.println("Failed to write default settings.");
