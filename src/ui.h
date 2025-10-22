@@ -31,8 +31,9 @@
 
 #include "apps/reader/app_screen.h"
 
-const int EPD_WIDTH = 540;
-const int EPD_HEIGHT = 960;
+// Swapped for landscape (横屏)
+const int EPD_WIDTH = 960;
+const int EPD_HEIGHT = 540;
 const float FONT_SIZE_ALL = 3;
 const int ROW_HEIGHT_ALL = 60;
 
@@ -87,6 +88,8 @@ enum ScreenType {
     SUDOKU_GAME_SCREEN,
     TEST_GAME_SCREEN,
     SD_GATEWAY_SCREEN
+    ,CONFIG_SCREEN
+    ,TODO_LIST_SCREEN
 };
 
 
@@ -148,6 +151,12 @@ namespace screens {
     void startWiFiScan();
     void drawAppsScreen();
     void drawGamesScreen();
+
+    void drawConfigScreen();
+    void handleConfigTouch(int row, int x, int y);
+
+    void drawTodoListScreen();
+    void handleTodoListTouch(int row, int x, int y);
 
     void drawSdGatewayScreen();
     void handleSdGatewayAction();

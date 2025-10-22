@@ -44,7 +44,8 @@ void setup() {
     Serial.begin(115200);
 
     M5.Display.fillScreen(TFT_WHITE);
-    M5.Display.setRotation(0);
+    // set to landscape
+    M5.Display.setRotation(1);
 
 
     if (!initSDCard()) {
@@ -159,6 +160,14 @@ void loop() {
                         displayMessage("Games pressed");
                         currentScreen = GAMES_SCREEN;
                         renderCurrentScreen();
+                    } else if (touchedRow == 9) {
+                        displayMessage("Config pressed");
+                        currentScreen = CONFIG_SCREEN;
+                        renderCurrentScreen();
+                    } else if (touchedRow == 10) {
+                        displayMessage("Todo pressed");
+                        currentScreen = TODO_LIST_SCREEN;
+                        renderCurrentScreen();
                     }
                 }
 
@@ -205,6 +214,15 @@ void loop() {
                 } else if (currentScreen == TEST_GAME_SCREEN) {
                     int touchedRow = getRowFromY(y);
                     games_test::handleTouch(touchedRow, x, y);
+                    isRendering = false;
+                }
+                else if (currentScreen == CONFIG_SCREEN) {
+                    int touchedRow = getRowFromY(y);
+                    screens::handleConfigTouch(touchedRow, x, y);
+                    isRendering = false;
+                } else if (currentScreen == TODO_LIST_SCREEN) {
+                    int touchedRow = getRowFromY(y);
+                    screens::handleTodoListTouch(touchedRow, x, y);
                     isRendering = false;
                 } else {
                     isRendering = false;

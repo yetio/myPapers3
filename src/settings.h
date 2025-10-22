@@ -21,11 +21,18 @@ public:
     void setLastConnectedSSID(const String& ssid);
     String getLastConnectedPassword() const;
     void setLastConnectedPassword(const String& password);
+    // new: Todoist token and iCal subscription URL
+    String getTodoistToken() const;
+    void setTodoistToken(const String& token);
+    String getICalUrl() const;
+    void setICalUrl(const String& url);
 
 private:
     WiFiSettings _wifiSettings;
     String _lastConnectedSSID;
     String _lastConnectedPassword;
+    String _todoistToken;
+    String _icalUrl;
     const String _settingsFile = "/settings.json";
 
     bool _createDefaultSettings();

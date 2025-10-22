@@ -1,5 +1,7 @@
 #include "ui.h"
 #include <WiFi.h>
+#include <time.h>
+#include "sync/sync_manager.h"
 
 
 #include "apps/text_lang_test/app_screen.h"
@@ -11,6 +13,7 @@
 #include "games/sudoku/game.h"
 #include "games/test/game.h"
 #include "screens/games_screen.h"
+#include "screens/todo_list_screen.h"
 
 
 bool firstRenderDone = false;
@@ -30,6 +33,50 @@ int rowsBufferCount = 0;
 
 void setUniversalFont() {
     M5.Display.setFont(UNIVERSAL_FONT);
+}
+
+// --- Status bar helpers ---
+static unsigned long statusAnimTick = 0;
+void drawStatusBar() {
+    // draw two small rows at top (row 0 and 1 are used already by header)
+    M5.Display.setCursor(0, 0);
+    M5.Display.setTextSize(2);
+    // time
+    time_t now = time(nullptr);
+    struct tm *tm_info = localtime(&now);
+    char buf[6];
+    if (tm_info) {
+        snprintf(buf, sizeof(buf), "%02d:%02d", tm_info->tm_hour, tm_info->tm_min);
+    } else {
+        strcpy(buf, "--:--");
+    }
+    M5.Display.setTextColor(TFT_BLACK, TFT_WHITE);
+    M5.Display.setCursor(10, 4);
+    M5.Display.print(buf);
+
+    // WiFi status
+    String wifiText = (WiFi.status() == WL_CONNECTED) ? "WiFi:On" : "WiFi:Off";
+    M5.Display.setCursor(140, 4);
+    M5.Display.print(wifiText);
+
+    // SD status
+    String sdText = isSDCardMounted() ? "SD:On" : "SD:Off";
+    M5.Display.setCursor(260, 4);
+    M5.Display.print(sdText);
+
+    // sync animation indicator
+    SyncState st = sync_manager_get_state();
+    String syncText = "Idle";
+    if (st == SYNC_RUNNING) {
+        const char spinner[] = "|/-\\";
+        char c = spinner[(statusAnimTick/10) % 4];
+        syncText = String("Sync:") + c;
+        statusAnimTick++;
+    } else if (st == SYNC_ERROR) {
+        syncText = "Sync:Err";
+    }
+    M5.Display.setCursor(380, 4);
+    M5.Display.print(syncText);
 }
 
 
@@ -102,6 +149,8 @@ void updateHeader() {
     } else {
         bufferRow("", 1, TFT_BLACK, TFT_WHITE, FONT_SIZE_ALL, false);
     }
+    // Draw status bar at top
+    drawStatusBar();
 }
 
 
@@ -137,6 +186,13 @@ static FooterButton sdgwFooterButtons[] = {
     {"Home", homeAction},
     {"Off", showOffScreen},
     {"Rfrsh", refreshUI},
+    {"Files", filesAction}
+};
+
+static FooterButton todoFooterButtons[] = {
+    {"Prev", screens::todoPrevPage},
+    {"Home", screens::todoBackHome},
+    {"Next", screens::todoNextPage},
     {"Files", filesAction}
 };
 
@@ -243,6 +299,14 @@ void renderCurrentScreen() {
         case SD_GATEWAY_SCREEN:
             footer.setButtons(sdgwFooterButtons, 4);
             screens::drawSdGatewayScreen();
+            break;
+        case CONFIG_SCREEN:
+            footer.setButtons(appFooterButtons, 4);
+            screens::drawConfigScreen();
+            break;
+        case TODO_LIST_SCREEN:
+            footer.setButtons(todoFooterButtons, 4);
+            screens::drawTodoListScreen();
             break;
     }
 
